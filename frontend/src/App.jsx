@@ -1,8 +1,8 @@
 function App() {
   return (
-    <>
-      <h1>FixFlow</h1>
-    </>
+    <div className="min-h-screen flex items-center justify-center bg-slate-100">
+      <h1 className="text-6xl font-bold text-blue-600">FixFlow 🚀</h1>
+    </div>
   );
 }
 
