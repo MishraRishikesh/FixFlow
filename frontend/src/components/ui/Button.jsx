@@ -1,3 +1,5 @@
+import clsx from "clsx";
+import { colors } from "../../styles/tokens";
 function Button({
   children,
   variant = "primary",
@@ -13,11 +15,15 @@ function Button({
     "inline-flex items-center justify-center gap-2 font-medium transition-all duration-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2";
 
   const variantClasses = {
-    primary: "bg-blue-600 text-white hover:bg-blue-700",
+    primary: clsx(colors.primary.bg, colors.primary.hover, colors.primary.text),
 
-    secondary: "bg-slate-200 text-slate-900 hover:bg-slate-300",
+    secondary: clsx(
+      colors.secondary.bg,
+      colors.secondary.hover,
+      colors.secondary.text,
+    ),
 
-    danger: "bg-red-600 text-white hover:bg-red-700",
+    danger: clsx(colors.danger.bg, colors.danger.hover, colors.danger.text),
 
     outline:
       "border border-slate-300 bg-white text-slate-900 hover:bg-slate-100",

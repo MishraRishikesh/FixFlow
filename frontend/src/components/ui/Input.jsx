@@ -1,23 +1,13 @@
+import clsx from "clsx";
+import { radius } from "../../styles/tokens";
 function Input({ label, error, fullWidth = false, className = "", ...props }) {
-  const inputClasses = `
-    border
-    border-slate-300
-    rounded-lg
-    px-4
-    py-2
-    w-full
-    outline-none
-    transition-all
-    duration-200
-    focus:ring-2
-    focus:ring-blue-500
-    focus:ring-offset-2
-    focus:border-blue-500
-    disabled:bg-slate-100
-    disabled:cursor-not-allowed
-    ${fullWidth ? "w-full" : ""}
-    ${className}
-  `;
+  const inputClasses = clsx(
+    "border border-slate-300 px-4 py-2 w-full outline-none transition-all duration-200",
+    "focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:border-blue-500",
+    "disabled:bg-slate-100 disabled:cursor-not-allowed",
+    radius.lg,
+    className,
+  );
 
   return (
     <div className={fullWidth ? "w-full" : ""}>
