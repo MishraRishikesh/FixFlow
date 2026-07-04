@@ -1,10 +1,11 @@
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
+import Card from "../../components/ui/Card";
 
 function HomePage() {
   return (
-    <main className="min-h-screen bg-slate-100 flex items-center justify-center">
-      <div className="bg-white border border-slate-200 rounded-xl shadow-md p-10 flex flex-col gap-6">
+    <main className="min-h-screen bg-slate-100 flex items-center justify-center p-8">
+      <Card className="flex flex-col gap-6 max-w-2xl w-full">
         <h1 className="text-4xl font-bold">FixFlow UI</h1>
 
         <div className="flex gap-4 flex-wrap">
@@ -46,7 +47,7 @@ function HomePage() {
             error="Room number is required"
           />
         </div>
-      </div>
+      </Card>
     </main>
   );
 }
