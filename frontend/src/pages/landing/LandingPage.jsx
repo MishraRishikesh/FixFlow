@@ -3,6 +3,8 @@ import HeroSection from "../../components/landing/HeroSection";
 import FeaturesSection from "../../components/landing/FeaturesSection";
 import WorkflowSection from "../../components/landing/WorkflowSection";
 import StatsSection from "../../components/landing/StatsSection";
+import CTASection from "../../components/landing/CTASection";
+import Footer from "../../components/landing/Footer";
 
 function LandingPage() {
   return (
@@ -14,6 +16,8 @@ function LandingPage() {
         <FeaturesSection />
         <WorkflowSection />
         <StatsSection />
+        <CTASection />
+        <Footer />
       </main>
     </>
   );
