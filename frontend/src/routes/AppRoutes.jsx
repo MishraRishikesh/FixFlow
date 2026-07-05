@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import MainLayout from "../layouts/MainLayout";
 
-import HomePage from "../pages/home/HomePage";
+import LandingPage from "../pages/landing/LandingPage";
 import LoginPage from "../pages/login/LoginPage";
 import DashboardPage from "../pages/dashboard/DashboardPage";
 
@@ -11,7 +11,7 @@ function AppRoutes() {
     <BrowserRouter>
       <Routes>
         <Route element={<MainLayout />}>
-          <Route path="/" element={<HomePage />} />
+          <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/dashboard" element={<DashboardPage />} />
         </Route>

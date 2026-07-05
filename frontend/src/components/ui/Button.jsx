@@ -25,8 +25,12 @@ function Button({
 
     danger: clsx(colors.danger.bg, colors.danger.hover, colors.danger.text),
 
-    outline:
-      "border border-slate-300 bg-white text-slate-900 hover:bg-slate-100",
+    outline: clsx(
+      "border border-slate-300",
+      "bg-white",
+      "text-slate-700",
+      "hover:bg-slate-100",
+    ),
   };
 
   const sizeClasses = {
