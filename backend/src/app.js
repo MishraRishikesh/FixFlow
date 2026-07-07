@@ -2,6 +2,7 @@ import authRoutes from "./routes/authRoutes.js";
 import express from "express";
 import cors from "cors";
 import hostelRoutes from "./routes/hostelRoutes.js";
+import complaintRoutes from "./routes/complaintRoutes.js";
 
 const app = express();
 
@@ -11,6 +12,7 @@ app.use(express.json());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/hostels", hostelRoutes);
+app.use("/api/complaints", complaintRoutes);
 
 console.log("app.js loaded");
 

@@ -3,10 +3,10 @@
 // ===============================
 
 export const ROLES = {
-  SUPER_ADMIN: "superAdmin",
   ADMIN: "admin",
-  WORKER: "worker",
+  WARDEN: "warden",
   STUDENT: "student",
+  WORKER: "worker",
 };
 
 // ===============================
