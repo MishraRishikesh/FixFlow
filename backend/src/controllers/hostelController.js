@@ -7,7 +7,7 @@ import {
   getAllHostels,
   getHostelById,
   updateHostel,
-  deactivateHostel,
+  updateHostelStatus,
 } from "../services/hostelService.js";
 
 // ===============================
@@ -90,20 +90,22 @@ const update = async (req, res) => {
   }
 };
 // ===============================
-// 6. Deactivate Hostel
+// 6. Update Hostel Status
 // ===============================
 
-const deactivate = async (req, res) => {
+const updateStatus = async (req, res) => {
   try {
-    const hostel = await deactivateHostel(req.params.id);
+    const hostel = await updateHostelStatus(req.params.id, req.body.isActive);
 
     res.status(200).json({
       success: true,
-      message: "Hostel deactivated successfully.",
+      message: `Hostel ${
+        hostel.isActive ? "activated" : "deactivated"
+      } successfully.`,
       data: hostel,
     });
   } catch (error) {
-    res.status(400).json({
+    res.status(404).json({
       success: false,
       message: error.message,
     });
@@ -113,4 +115,4 @@ const deactivate = async (req, res) => {
 // 7. Export
 // ===============================
 
-export { create, getAll, getById, update, deactivate };
+export { create, getAll, getById, update, updateStatus };

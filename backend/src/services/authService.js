@@ -4,13 +4,19 @@
 
 import Staff from "../models/Staff.js";
 import generateToken from "../utils/generateToken.js";
+import { ROLES } from "../constants/roles.js";
 
 // ===============================
 // 2. Service Functions
 // ===============================
 
 const registerStaff = async userData => {
-  const { email } = userData;
+  const { email, role } = userData;
+
+  // Only students can register publicly
+  if (role !== ROLES.STUDENT) {
+    throw new Error("Public registration is allowed only for students.");
+  }
 
   // Check if email already exists
   const existingUser = await Staff.findOne({ email });
@@ -19,7 +25,7 @@ const registerStaff = async userData => {
     throw new Error("Email already registered.");
   }
 
-  // Create new staff member
+  // Create Staff
   const staff = await Staff.create(userData);
 
   return staff;

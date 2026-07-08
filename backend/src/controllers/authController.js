@@ -18,7 +18,17 @@ const register = async (req, res) => {
       data: staff,
     });
   } catch (error) {
-    res.status(400).json({
+    let statusCode = 400;
+
+    if (error.message === "Email already registered.") {
+      statusCode = 409;
+    }
+
+    if (error.message === "Public registration is allowed only for students.") {
+      statusCode = 403;
+    }
+
+    res.status(statusCode).json({
       success: false,
       message: error.message,
     });
@@ -39,7 +49,13 @@ const login = async (req, res) => {
       data: result,
     });
   } catch (error) {
-    res.status(400).json({
+    let statusCode = 400;
+
+    if (error.message === "Invalid email or password.") {
+      statusCode = 401;
+    }
+
+    res.status(statusCode).json({
       success: false,
       message: error.message,
     });

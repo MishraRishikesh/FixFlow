@@ -90,17 +90,21 @@ const updateHostel = async (hostelId, hostelData) => {
   return hostel;
 };
 // ===============================
-// 6. Deactivate Hostel
+// 6. Update Hostel Status
 // ===============================
 
-const deactivateHostel = async hostelId => {
+const updateHostelStatus = async (hostelId, isActive) => {
   const hostel = await Hostel.findById(hostelId);
 
   if (!hostel) {
     throw new Error("Hostel not found.");
   }
 
-  hostel.isActive = false;
+  if (typeof isActive !== "boolean") {
+    throw new Error("isActive must be true or false.");
+  }
+
+  hostel.isActive = isActive;
 
   await hostel.save();
 
@@ -115,5 +119,5 @@ export {
   getAllHostels,
   getHostelById,
   updateHostel,
-  deactivateHostel,
+  updateHostelStatus,
 };

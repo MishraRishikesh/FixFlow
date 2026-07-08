@@ -9,7 +9,7 @@ import {
   getAll,
   getById,
   update,
-  deactivate,
+  updateStatus,
 } from "../controllers/hostelController.js";
 
 import { verifyToken } from "../middleware/authMiddleware.js";
@@ -38,8 +38,7 @@ router.get("/:id", verifyToken, authorize("admin", "warden"), getById);
 router.put("/:id", verifyToken, authorize("admin"), update);
 
 // Deactivate Hostel (Admin Only)
-router.patch("/:id/deactivate", verifyToken, authorize("admin"), deactivate);
-
+router.patch("/:id/status", verifyToken, authorize("admin"), updateStatus);
 // ===============================
 // 4. Export
 // ===============================

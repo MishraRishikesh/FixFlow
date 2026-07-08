@@ -187,6 +187,9 @@ const assignWorker = async (complaintId, workerId, user) => {
 // ===============================
 
 const updateComplaintStatus = async (complaintId, status, user) => {
+  if (!Object.values(COMPLAINT_STATUS).includes(status)) {
+    throw new Error("Invalid complaint status.");
+  }
   // Find Complaint
   const complaint = await Complaint.findById(complaintId);
 
