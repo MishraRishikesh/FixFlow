@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
-import { ROLE_VALUES } from "../constants/roles.js";
+import { ROLES, ROLE_VALUES } from "../constants/roles.js";
 
 // 1. Create Schema
 const staffSchema = new mongoose.Schema(
@@ -8,6 +8,12 @@ const staffSchema = new mongoose.Schema(
     name: {
       type: String,
       required: true,
+      trim: true,
+    },
+
+    enrollmentNumber: {
+      type: String,
+      default: null,
       trim: true,
     },
 
@@ -29,6 +35,23 @@ const staffSchema = new mongoose.Schema(
       type: String,
       enum: ROLE_VALUES,
       required: true,
+    },
+
+    isHeadWarden: {
+      type: Boolean,
+      default: false,
+
+      validate: {
+        validator: function (value) {
+          // Only wardens can be Head Wardens
+          if (value && this.role !== ROLES.WARDEN) {
+            return false;
+          }
+          return true;
+        },
+
+        message: "Only wardens can be Head Wardens.",
+      },
     },
 
     hostel: {
