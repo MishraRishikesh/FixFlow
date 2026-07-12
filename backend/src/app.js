@@ -5,6 +5,7 @@ import hostelRoutes from "./routes/hostelRoutes.js";
 import complaintRoutes from "./routes/complaintRoutes.js";
 import staffRoutes from "./routes/staffRoutes.js";
 import errorMiddleware from "./middleware/errorMiddleware.js";
+import healthRoutes from "./routes/healthRoutes.js";
 
 const app = express();
 
@@ -16,17 +17,15 @@ app.use("/api/auth", authRoutes);
 app.use("/api/hostels", hostelRoutes);
 app.use("/api/complaints", complaintRoutes);
 app.use("/api/staff", staffRoutes);
-console.log("app.js loaded");
 
 app.get("/", (req, res) => {
-  console.log("GET / hit");
-
   res.json({
     success: true,
     message: "FixFlow Backend Running 🚀",
   });
 });
 
+app.use("/api/health", healthRoutes);
 // Global Error Handler
 app.use(errorMiddleware);
 
