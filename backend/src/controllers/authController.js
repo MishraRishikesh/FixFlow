@@ -3,67 +3,38 @@
 // ===============================
 
 import { registerStaff, loginStaff } from "../services/authService.js";
+import asyncHandler from "../utils/asyncHandler.js";
 
 // ===============================
 // 2. Controller Functions
 // ===============================
 
-const register = async (req, res) => {
-  try {
-    const staff = await registerStaff(req.body);
+const registerController = asyncHandler(async (req, res) => {
+  const staff = await registerStaff(req.body);
 
-    res.status(201).json({
-      success: true,
-      message: "Registration successful.",
-      data: staff,
-    });
-  } catch (error) {
-    let statusCode = 400;
-
-    if (error.message === "Email already registered.") {
-      statusCode = 409;
-    }
-
-    if (error.message === "Public registration is allowed only for students.") {
-      statusCode = 403;
-    }
-
-    res.status(statusCode).json({
-      success: false,
-      message: error.message,
-    });
-  }
-};
+  res.status(201).json({
+    success: true,
+    message: "Registration successful.",
+    data: staff,
+  });
+});
 
 // ===============================
 // 3. Login
 // ===============================
 
-const login = async (req, res) => {
-  try {
-    const result = await loginStaff(req.body);
+const loginController = asyncHandler(async (req, res) => {
+  const result = await loginStaff(req.body);
 
-    res.status(200).json({
-      success: true,
-      message: "Login successful.",
-      data: result,
-    });
-  } catch (error) {
-    let statusCode = 400;
-
-    if (error.message === "Invalid email or password.") {
-      statusCode = 401;
-    }
-
-    res.status(statusCode).json({
-      success: false,
-      message: error.message,
-    });
-  }
-};
+  res.status(200).json({
+    success: true,
+    message: "Login successful.",
+    data: result,
+  });
+});
 
 // ===============================
 // 4. Export
 // ===============================
 
-export { register, login };
+export { registerController, loginController };

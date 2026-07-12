@@ -5,11 +5,11 @@
 import express from "express";
 
 import {
-  create,
-  getAll,
-  getById,
-  update,
-  updateStatus,
+  createHostelController,
+  getAllHostelsController,
+  getHostelByIdController,
+  updateHostelController,
+  updateHostelStatusController,
 } from "../controllers/hostelController.js";
 
 import { verifyToken } from "../middleware/authMiddleware.js";
@@ -26,19 +26,34 @@ const router = express.Router();
 // ===============================
 
 // Create Hostel (Admin Only)
-router.post("/", verifyToken, authorize("admin"), create);
+router.post("/", verifyToken, authorize("admin"), createHostelController);
 
 // Get All Hostels (Admin + Warden)
-router.get("/", verifyToken, authorize("admin", "warden"), getAll);
+router.get(
+  "/",
+  verifyToken,
+  authorize("admin", "warden"),
+  getAllHostelsController,
+);
 
 // Get Hostel By ID (Admin + Warden)
-router.get("/:id", verifyToken, authorize("admin", "warden"), getById);
+router.get(
+  "/:id",
+  verifyToken,
+  authorize("admin", "warden"),
+  getHostelByIdController,
+);
 
 // Update Hostel (Admin Only)
-router.put("/:id", verifyToken, authorize("admin"), update);
+router.put("/:id", verifyToken, authorize("admin"), updateHostelController);
 
 // Deactivate Hostel (Admin Only)
-router.patch("/:id/status", verifyToken, authorize("admin"), updateStatus);
+router.patch(
+  "/:id/status",
+  verifyToken,
+  authorize("admin"),
+  updateHostelStatusController,
+);
 // ===============================
 // 4. Export
 // ===============================

@@ -3,6 +3,7 @@
 // ===============================
 
 import Hostel from "../models/Hostel.js";
+import AppError from "../utils/appError.js";
 
 // ===============================
 // 2. Service Functions
@@ -17,7 +18,7 @@ const createHostel = async (hostelData, user) => {
   });
 
   if (existingHostel) {
-    throw new Error("Hostel code already exists.");
+    throw new AppError("Hostel code already exists.", 400);
   }
 
   // Create the new hostel
@@ -52,7 +53,7 @@ const getHostelById = async hostelId => {
   );
 
   if (!hostel) {
-    throw new Error("Hostel not found.");
+    throw new AppError("Hostel not found.", 404);
   }
 
   return hostel;
@@ -68,7 +69,7 @@ const updateHostel = async (hostelId, hostelData) => {
   const hostel = await Hostel.findById(hostelId);
 
   if (!hostel) {
-    throw new Error("Hostel not found.");
+    throw new AppError("Hostel not found.", 404);
   }
 
   // Check if code is already used by another hostel
@@ -78,7 +79,7 @@ const updateHostel = async (hostelId, hostelData) => {
   });
 
   if (existingHostel) {
-    throw new Error("Hostel code already exists.");
+    throw new AppError("Hostel code already exists.", 409);
   }
 
   hostel.name = name;
@@ -97,11 +98,11 @@ const updateHostelStatus = async (hostelId, isActive) => {
   const hostel = await Hostel.findById(hostelId);
 
   if (!hostel) {
-    throw new Error("Hostel not found.");
+    throw new AppError("Hostel not found.", 404);
   }
 
   if (typeof isActive !== "boolean") {
-    throw new Error("isActive must be true or false.");
+    throw new AppError("isActive must be true or false.", 400);
   }
 
   hostel.isActive = isActive;

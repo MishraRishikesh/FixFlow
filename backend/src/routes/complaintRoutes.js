@@ -5,11 +5,11 @@
 import express from "express";
 
 import {
-  create,
-  getAll,
-  getById,
-  assign,
-  updateStatus,
+  createComplaintController,
+  getComplaintsController,
+  getComplaintByIdController,
+  assignWorkerController,
+  updateComplaintStatusController,
 } from "../controllers/complaintController.js";
 
 import { verifyToken } from "../middleware/authMiddleware.js";
@@ -28,25 +28,40 @@ const router = express.Router();
 // ===============================
 
 // Create Complaint
-router.post("/", verifyToken, authorize(ROLES.STUDENT, ROLES.WARDEN), create);
+router.post(
+  "/",
+  verifyToken,
+  authorize(ROLES.STUDENT, ROLES.WARDEN),
+  createComplaintController,
+);
 // Get Complaints
 router.get(
   "/",
   verifyToken,
   authorize(ROLES.STUDENT, ROLES.WARDEN, ROLES.WORKER),
-  getAll,
+  getComplaintsController,
 );
 // Get Complaint By ID
 router.get(
   "/:id",
   verifyToken,
   authorize(ROLES.STUDENT, ROLES.WARDEN, ROLES.WORKER),
-  getById,
+  getComplaintByIdController,
 );
 // Assign Worker (Warden Only)
-router.patch("/:id/assign", verifyToken, authorize(ROLES.WARDEN), assign);
+router.patch(
+  "/:id/assign",
+  verifyToken,
+  authorize(ROLES.WARDEN),
+  assignWorkerController,
+);
 // Update Complaint Status (Worker Only)
-router.patch("/:id/status", verifyToken, authorize(ROLES.WORKER), updateStatus);
+router.patch(
+  "/:id/status",
+  verifyToken,
+  authorize(ROLES.WORKER),
+  updateComplaintStatusController,
+);
 // ===============================
 // 4. Export
 // ===============================

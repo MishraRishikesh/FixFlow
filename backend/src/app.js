@@ -4,6 +4,7 @@ import cors from "cors";
 import hostelRoutes from "./routes/hostelRoutes.js";
 import complaintRoutes from "./routes/complaintRoutes.js";
 import staffRoutes from "./routes/staffRoutes.js";
+import errorMiddleware from "./middleware/errorMiddleware.js";
 
 const app = express();
 
@@ -25,5 +26,8 @@ app.get("/", (req, res) => {
     message: "FixFlow Backend Running 🚀",
   });
 });
+
+// Global Error Handler
+app.use(errorMiddleware);
 
 export default app;

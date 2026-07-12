@@ -9,110 +9,82 @@ import {
   updateHostel,
   updateHostelStatus,
 } from "../services/hostelService.js";
+import asyncHandler from "../utils/asyncHandler.js";
 
 // ===============================
-// 2. Controller Functions
+// 2. Create Hostel
 // ===============================
 
-const create = async (req, res) => {
-  try {
-    const hostel = await createHostel(req.body, req.user);
+const createHostelController = asyncHandler(async (req, res) => {
+  const hostel = await createHostel(req.body, req.user);
 
-    res.status(201).json({
-      success: true,
-      message: "Hostel created successfully.",
-      data: hostel,
-    });
-  } catch (error) {
-    res.status(400).json({
-      success: false,
-      message: error.message,
-    });
-  }
-};
+  res.status(201).json({
+    success: true,
+    message: "Hostel created successfully.",
+    data: hostel,
+  });
+});
+
 // ===============================
 // 3. Get All Hostels
 // ===============================
 
-const getAll = async (req, res) => {
-  try {
-    const hostels = await getAllHostels();
+const getAllHostelsController = asyncHandler(async (req, res) => {
+  const hostels = await getAllHostels();
 
-    res.status(200).json({
-      success: true,
-      count: hostels.length,
-      data: hostels,
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
-  }
-};
+  res.status(200).json({
+    success: true,
+    count: hostels.length,
+    data: hostels,
+  });
+});
 // ===============================
 // 4. Get Hostel By ID
 // ===============================
 
-const getById = async (req, res) => {
-  try {
-    const hostel = await getHostelById(req.params.id);
+const getHostelByIdController = asyncHandler(async (req, res) => {
+  const hostel = await getHostelById(req.params.id);
 
-    res.status(200).json({
-      success: true,
-      data: hostel,
-    });
-  } catch (error) {
-    res.status(404).json({
-      success: false,
-      message: error.message,
-    });
-  }
-};
+  res.status(200).json({
+    success: true,
+    data: hostel,
+  });
+});
 // ===============================
 // 5. Update Hostel
 // ===============================
 
-const update = async (req, res) => {
-  try {
-    const hostel = await updateHostel(req.params.id, req.body);
-
-    res.status(200).json({
-      success: true,
-      message: "Hostel updated successfully.",
-      data: hostel,
-    });
-  } catch (error) {
-    res.status(400).json({
-      success: false,
-      message: error.message,
-    });
-  }
-};
+const updateHostelController = asyncHandler(async (req, res) => {
+  const hostel = await updateHostel(req.params.id, req.body);
+  res.status(200).json({
+    success: true,
+    message: "Hostel updated successfully.",
+    data: hostel,
+  });
+});
 // ===============================
 // 6. Update Hostel Status
 // ===============================
 
-const updateStatus = async (req, res) => {
-  try {
-    const hostel = await updateHostelStatus(req.params.id, req.body.isActive);
+const updateHostelStatusController = asyncHandler(async (req, res) => {
+  const hostel = await updateHostelStatus(req.params.id, req.body.isActive);
 
-    res.status(200).json({
-      success: true,
-      message: `Hostel ${
-        hostel.isActive ? "activated" : "deactivated"
-      } successfully.`,
-      data: hostel,
-    });
-  } catch (error) {
-    res.status(404).json({
-      success: false,
-      message: error.message,
-    });
-  }
-};
+  res.status(200).json({
+    success: true,
+    message: `Hostel ${
+      hostel.isActive ? "activated" : "deactivated"
+    } successfully.`,
+    data: hostel,
+  });
+});
 // ===============================
 // 7. Export
 // ===============================
 
-export { create, getAll, getById, update, updateStatus };
+export {
+  createHostelController,
+  getAllHostelsController,
+  getHostelByIdController,
+  updateHostelController,
+  updateHostelStatusController,
+};

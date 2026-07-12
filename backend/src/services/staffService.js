@@ -5,6 +5,7 @@
 import Staff from "../models/Staff.js";
 import Hostel from "../models/Hostel.js";
 import { ROLES } from "../constants/roles.js";
+import AppError from "../utils/appError.js";
 
 // ===============================
 // 2. Shared Staff Creation
@@ -17,19 +18,19 @@ const createStaff = async (staffData, user, role) => {
   const existingStaff = await Staff.findOne({ email });
 
   if (existingStaff) {
-    throw new Error("Email already registered.");
+    throw new AppError("Email already registered.", 400);
   }
 
   // Hostel must exist
   const hostel = await Hostel.findById(user.hostel);
 
   if (!hostel) {
-    throw new Error("Hostel not found.");
+    throw new AppError("Hostel not found.", 404);
   }
 
   // Hostel must be active
   if (!hostel.isActive) {
-    throw new Error("Hostel is inactive.");
+    throw new AppError("Hostel is inactive.", 400);
   }
 
   const staff = await Staff.create({
@@ -61,14 +62,14 @@ const createStudent = async (staffData, user) => {
 
   // Enrollment Number is required
   if (!enrollmentNumber) {
-    throw new Error("Enrollment number is required.");
+    throw new AppError("Enrollment number is required.", 400);
   }
 
   // Email already exists
   const existingStaff = await Staff.findOne({ email });
 
   if (existingStaff) {
-    throw new Error("Email already registered.");
+    throw new AppError("Email already registered.", 409);
   }
 
   // Enrollment already exists
@@ -77,19 +78,19 @@ const createStudent = async (staffData, user) => {
   });
 
   if (existingStudent) {
-    throw new Error("Enrollment number already exists.");
+    throw new AppError("Enrollment number already exists.", 409);
   }
 
   // Hostel must exist
   const hostel = await Hostel.findById(user.hostel);
 
   if (!hostel) {
-    throw new Error("Hostel not found.");
+    throw new AppError("Hostel not found.", 404);
   }
 
   // Hostel must be active
   if (!hostel.isActive) {
-    throw new Error("Hostel is inactive.");
+    throw new AppError("Hostel is inactive.", 400);
   }
 
   const student = await Staff.create({
@@ -162,7 +163,7 @@ const findAuthorizedStaff = async (staffId, user) => {
   const staff = await Staff.findById(staffId);
 
   if (!staff) {
-    throw new Error("Staff member not found.");
+    throw new AppError("Staff member not found.", 404);
   }
 
   // Worker / Student → Only self
@@ -170,7 +171,10 @@ const findAuthorizedStaff = async (staffId, user) => {
     [ROLES.WORKER, ROLES.STUDENT].includes(user.role) &&
     staff._id.toString() !== user._id.toString()
   ) {
-    throw new Error("You are not authorized to access this staff member.");
+    throw new AppError(
+      "You are not authorized to access this staff member.",
+      403,
+    );
   }
 
   // Warden → Same hostel only
@@ -178,7 +182,10 @@ const findAuthorizedStaff = async (staffId, user) => {
     user.role === ROLES.WARDEN &&
     staff.hostel?.toString() !== user.hostel.toString()
   ) {
-    throw new Error("You are not authorized to access this staff member.");
+    throw new AppError(
+      "You are not authorized to access this staff member.",
+      403,
+    );
   }
 
   return staff;
@@ -200,7 +207,10 @@ const updateStaff = async (staffId, updateData, user) => {
   const staff = await findAuthorizedStaff(staffId, user);
 
   if (staff._id.toString() === user._id.toString()) {
-    throw new Error("Use the profile endpoint to update your own account.");
+    throw new AppError(
+      "Use the profile endpoint to update your own account.",
+      400,
+    );
   }
 
   // Normal Warden cannot update Wardens
@@ -209,7 +219,7 @@ const updateStaff = async (staffId, updateData, user) => {
     !user.isHeadWarden &&
     staff.role === ROLES.WARDEN
   ) {
-    throw new Error("You are not authorized to update wardens.");
+    throw new AppError("You are not authorized to update wardens.", 403);
   }
 
   const { name, email, phone } = updateData;
@@ -219,7 +229,7 @@ const updateStaff = async (staffId, updateData, user) => {
     const existingStaff = await Staff.findOne({ email });
 
     if (existingStaff) {
-      throw new Error("Email already registered.");
+      throw new AppError("Email already registered.", 409);
     }
 
     staff.email = email;
@@ -247,7 +257,7 @@ const deactivateStaff = async (staffId, user) => {
 
   // Cannot deactivate yourself
   if (staff._id.toString() === user._id.toString()) {
-    throw new Error("You cannot deactivate your own account.");
+    throw new AppError("You cannot deactivate your own account.", 400);
   }
 
   // Normal Warden cannot deactivate Wardens
@@ -256,7 +266,7 @@ const deactivateStaff = async (staffId, user) => {
     !user.isHeadWarden &&
     staff.role === ROLES.WARDEN
   ) {
-    throw new Error("You are not authorized to deactivate wardens.");
+    throw new AppError("You are not authorized to deactivate wardens.", 403);
   }
 
   staff.isActive = false;
@@ -279,7 +289,7 @@ const activateStaff = async (staffId, user) => {
     !user.isHeadWarden &&
     staff.role === ROLES.WARDEN
   ) {
-    throw new Error("You are not authorized to activate wardens.");
+    throw new AppError("You are not authorized to activate wardens.", 403);
   }
 
   staff.isActive = true;
@@ -296,28 +306,28 @@ const activateStaff = async (staffId, user) => {
 const makeHeadWarden = async (staffId, user) => {
   // Only Head Wardens
   if (!user.isHeadWarden) {
-    throw new Error("Only Head Wardens can transfer this role.");
+    throw new AppError("Only Head Wardens can transfer this role.", 403);
   }
 
   // Find selected warden
   const newHeadWarden = await findAuthorizedStaff(staffId, user);
   if (newHeadWarden._id.toString() === user._id.toString()) {
-    throw new Error("You are already the Head Warden.");
+    throw new AppError("You are already the Head Warden.", 400);
   }
 
   // Must be Warden
   if (newHeadWarden.role !== ROLES.WARDEN) {
-    throw new Error("Selected staff member is not a warden.");
+    throw new AppError("Selected staff member is not a warden.", 400);
   }
 
   // Already Head Warden
   if (newHeadWarden.isHeadWarden) {
-    throw new Error("This staff member is already the Head Warden.");
+    throw new AppError("This staff member is already the Head Warden.", 400);
   }
 
   // Must be active
   if (!newHeadWarden.isActive) {
-    throw new Error("Cannot promote an inactive warden.");
+    throw new AppError("Cannot promote an inactive warden.", 400);
   }
 
   // Find current Head Warden
@@ -328,7 +338,7 @@ const makeHeadWarden = async (staffId, user) => {
   });
 
   if (!currentHeadWarden) {
-    throw new Error("Current Head Warden not found.");
+    throw new AppError("Current Head Warden not found.", 404);
   }
 
   // Transfer Head Warden role

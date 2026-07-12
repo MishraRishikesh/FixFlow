@@ -7,6 +7,7 @@ import Hostel from "../models/Hostel.js";
 import Staff from "../models/Staff.js";
 import { ROLES } from "../constants/roles.js";
 import { COMPLAINT_STATUS } from "../constants/complaint.js";
+import AppError from "../utils/appError.js";
 
 // ===============================
 // 2. Create Complaint
@@ -17,19 +18,19 @@ const createComplaint = async (complaintData, user) => {
 
   // Check if user is allowed to create complaints
   if (![ROLES.STUDENT, ROLES.WARDEN].includes(user.role)) {
-    throw new Error("You are not allowed to create complaints.");
+    throw new AppError("You are not allowed to create complaints.", 403);
   }
 
   // Check if hostel exists
   const hostel = await Hostel.findById(user.hostel);
 
   if (!hostel) {
-    throw new Error("Hostel not found.");
+    throw new AppError("Hostel not found.", 404);
   }
 
   // Check if hostel is active
   if (!hostel.isActive) {
-    throw new Error("This hostel is currently inactive.");
+    throw new AppError("This hostel is currently inactive.", 400);
   }
 
   // Create complaint
@@ -87,7 +88,7 @@ const getComplaints = async user => {
 
   // Super Admin → No access
   else {
-    throw new Error("You are not allowed to view complaints.");
+    throw new AppError("You are not allowed to view complaints.", 403);
   }
 
   return complaints;
@@ -104,7 +105,7 @@ const getComplaintById = async (complaintId, user) => {
     .populate("assignedBy", "name email");
 
   if (!complaint) {
-    throw new Error("Complaint not found.");
+    throw new AppError("Complaint not found.", 404);
   }
 
   // Student → Only own complaint
@@ -112,7 +113,7 @@ const getComplaintById = async (complaintId, user) => {
     user.role === ROLES.STUDENT &&
     complaint.createdBy._id.toString() !== user._id.toString()
   ) {
-    throw new Error("You are not allowed to view this complaint.");
+    throw new AppError("You are not allowed to view this complaint.", 403);
   }
 
   // Warden → Complaint must belong to same hostel
@@ -120,7 +121,7 @@ const getComplaintById = async (complaintId, user) => {
     user.role === ROLES.WARDEN &&
     complaint.hostel._id.toString() !== user.hostel.toString()
   ) {
-    throw new Error("You are not allowed to view this complaint.");
+    throw new AppError("You are not allowed to view this complaint.", 403);
   }
 
   // Worker → Only assigned complaint
@@ -129,7 +130,7 @@ const getComplaintById = async (complaintId, user) => {
     (!complaint.assignedWorker ||
       complaint.assignedWorker._id.toString() !== user._id.toString())
   ) {
-    throw new Error("You are not allowed to view this complaint.");
+    throw new AppError("You are not allowed to view this complaint.", 403);
   }
 
   return complaint;
@@ -143,29 +144,32 @@ const assignWorker = async (complaintId, workerId, user) => {
   const complaint = await Complaint.findById(complaintId);
 
   if (!complaint) {
-    throw new Error("Complaint not found.");
+    throw new AppError("Complaint not found.", 404);
   }
 
   // Complaint must belong to warden's hostel
   if (complaint.hostel.toString() !== user.hostel.toString()) {
-    throw new Error("You are not allowed to assign workers for this hostel.");
+    throw new AppError(
+      "You are not allowed to assign workers for this hostel.",
+      403,
+    );
   }
 
   // Find Worker
   const worker = await Staff.findById(workerId);
 
   if (!worker) {
-    throw new Error("Worker not found.");
+    throw new AppError("Worker not found.", 404);
   }
 
   // Worker role validation
   if (worker.role !== ROLES.WORKER) {
-    throw new Error("Selected staff member is not a worker.");
+    throw new AppError("Selected staff member is not a worker.", 400);
   }
 
   // Worker must belong to same hostel
   if (worker.hostel.toString() !== user.hostel.toString()) {
-    throw new Error("Worker belongs to another hostel.");
+    throw new AppError("Worker belongs to another hostel.", 400);
   }
 
   // Assign Worker
@@ -182,19 +186,20 @@ const assignWorker = async (complaintId, workerId, user) => {
     { path: "hostel", select: "name code" },
   ]);
 };
+
 // ===============================
 // 6. Update Complaint Status
 // ===============================
 
 const updateComplaintStatus = async (complaintId, status, user) => {
   if (!Object.values(COMPLAINT_STATUS).includes(status)) {
-    throw new Error("Invalid complaint status.");
+    throw new AppError("Invalid complaint status.", 400);
   }
   // Find Complaint
   const complaint = await Complaint.findById(complaintId);
 
   if (!complaint) {
-    throw new Error("Complaint not found.");
+    throw new AppError("Complaint not found.", 404);
   }
 
   // Only assigned worker can update status
@@ -202,7 +207,7 @@ const updateComplaintStatus = async (complaintId, status, user) => {
     !complaint.assignedWorker ||
     complaint.assignedWorker.toString() !== user._id.toString()
   ) {
-    throw new Error("You are not assigned to this complaint.");
+    throw new AppError("You are not assigned to this complaint.", 403);
   }
 
   // Allowed Status Transitions
@@ -210,18 +215,24 @@ const updateComplaintStatus = async (complaintId, status, user) => {
     complaint.status === COMPLAINT_STATUS.ASSIGNED &&
     status !== COMPLAINT_STATUS.IN_PROGRESS
   ) {
-    throw new Error("Assigned complaints can only be moved to In Progress.");
+    throw new AppError(
+      "Assigned complaints can only be moved to In Progress.",
+      400,
+    );
   }
 
   if (
     complaint.status === COMPLAINT_STATUS.IN_PROGRESS &&
     status !== COMPLAINT_STATUS.COMPLETED
   ) {
-    throw new Error("In Progress complaints can only be marked Completed.");
+    throw new AppError(
+      "In Progress complaints can only be marked Completed.",
+      400,
+    );
   }
 
   if (complaint.status === COMPLAINT_STATUS.COMPLETED) {
-    throw new Error("Complaint is already completed.");
+    throw new AppError("Complaint is already completed.", 400);
   }
 
   complaint.status = status;
