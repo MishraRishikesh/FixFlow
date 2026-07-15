@@ -10,11 +10,27 @@ import DeleteComplaintModal from "./DeleteComplaintModal";
 import { deleteComplaint } from "../../services/complaintService";
 import toast from "react-hot-toast";
 
-function ComplaintTable({ complaints, loading, refreshComplaints }) {
+function ComplaintTable({ complaints, loading, loadComplaints }) {
   const [selectedComplaint, setSelectedComplaint] = useState(null);
   const [open, setOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
+
+  function closeViewModal() {
+    setOpen(false);
+    setSelectedComplaint(null);
+  }
+
+  function closeEditModal() {
+    setEditOpen(false);
+    setSelectedComplaint(null);
+  }
+
+  function closeDeleteModal() {
+    setDeleteOpen(false);
+    setSelectedComplaint(null);
+  }
+
   const handleDelete = async () => {
     try {
       const response = await deleteComplaint(selectedComplaint._id);
@@ -27,8 +43,8 @@ function ComplaintTable({ complaints, loading, refreshComplaints }) {
 
       setSelectedComplaint(null);
 
-      if (refreshComplaints) {
-        refreshComplaints();
+      if (loadComplaints) {
+        loadComplaints();
       }
     } catch (error) {
       toast.error(
@@ -83,25 +99,19 @@ function ComplaintTable({ complaints, loading, refreshComplaints }) {
       <ComplaintDetailsModal
         complaint={selectedComplaint}
         open={open}
-        onClose={() => {
-          setOpen(false);
-          setSelectedComplaint(null);
-        }}
+        closeViewModal={closeViewModal}
       />
 
       <EditComplaintModal
         open={editOpen}
         complaint={selectedComplaint}
-        onClose={() => {
-          setEditOpen(false);
-          setSelectedComplaint(null);
-        }}
+        closeEditModal={closeEditModal}
         onSuccess={() => {
           setEditOpen(false);
           setSelectedComplaint(null);
 
-          if (refreshComplaints) {
-            refreshComplaints();
+          if (loadComplaints) {
+            loadComplaints();
           }
         }}
       />
@@ -109,10 +119,7 @@ function ComplaintTable({ complaints, loading, refreshComplaints }) {
       <DeleteComplaintModal
         open={deleteOpen}
         complaint={selectedComplaint}
-        onClose={() => {
-          setDeleteOpen(false);
-          setSelectedComplaint(null);
-        }}
+        closeDeleteModal={closeDeleteModal}
         onDelete={handleDelete}
       />
     </>

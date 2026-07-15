@@ -44,7 +44,7 @@ function ComplaintTableRow({ complaint, onView, onEdit, onDelete }) {
         <div className="flex items-center gap-2">
           <button
             onClick={onView}
-            className="rounded-lg p-2 transition hover:bg-slate-100"
+            className="rounded-lg p-2 transition-all duration-200 hover:scale-105 hover:bg-slate-100 active:scale-95"
             title="View"
           >
             <Eye size={18} />
@@ -52,7 +52,7 @@ function ComplaintTableRow({ complaint, onView, onEdit, onDelete }) {
 
           <button
             onClick={onEdit}
-            className="rounded-lg p-2 transition hover:bg-slate-100"
+            className="rounded-lg p-2 transition-all duration-200 hover:scale-105 hover:bg-slate-100 active:scale-95"
             title="Edit"
           >
             <Pencil size={18} />
@@ -60,7 +60,7 @@ function ComplaintTableRow({ complaint, onView, onEdit, onDelete }) {
 
           <button
             onClick={onDelete}
-            className="rounded-lg p-2 transition hover:bg-red-50"
+            className="rounded-lg p-2 transition-all duration-200 hover:scale-105 hover:bg-red-50 active:scale-95"
             title="Delete"
           >
             <Trash2 size={18} className="text-red-600" />

@@ -29,7 +29,7 @@ function ComplaintsPage() {
     fetchComplaints();
   }, []);
 
-  async function refreshComplaints() {
+  async function loadComplaints() {
     try {
       const data = await getComplaints();
       setComplaints(data);
@@ -61,7 +61,7 @@ function ComplaintsPage() {
       </div>
 
       <ComplaintToolbar
-        onComplaintCreated={refreshComplaints}
+        onComplaintCreated={loadComplaints}
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
         statusFilter={statusFilter}
@@ -71,7 +71,7 @@ function ComplaintsPage() {
       <ComplaintTable
         complaints={filteredComplaints}
         loading={loading}
-        refreshComplaints={refreshComplaints}
+        refreshColoadComplaintsmplaints={loadComplaints}
       />
     </div>
   );

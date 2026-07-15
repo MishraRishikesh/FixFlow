@@ -18,7 +18,7 @@ function ComplaintDetailsModal({ complaint, open, onClose }) {
   return (
     <Modal open={open} title={complaint.title} onClose={onClose}>
       <div className="space-y-6">
-        <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <div>
             <p className="text-sm text-gray-500">Status</p>
 
@@ -48,12 +48,26 @@ function ComplaintDetailsModal({ complaint, open, onClose }) {
               })}
             </p>
           </div>
+
+          <div>
+            <p className="text-sm text-gray-500">Assigned Worker</p>
+
+            <p>{complaint.assignedWorker?.name || "Not Assigned"}</p>
+          </div>
+        </div>
+
+        <div>
+          <p className="text-sm text-gray-500">Created By</p>
+
+          <p>{complaint.createdBy?.name}</p>
         </div>
 
         <div>
           <p className="mb-2 text-sm text-gray-500">Description</p>
 
-          <p className="leading-relaxed">{complaint.description}</p>
+          <p className="max-h-40 overflow-y-auto leading-relaxed">
+            {complaint.description}
+          </p>
         </div>
       </div>
     </Modal>
