@@ -258,8 +258,112 @@ const updateComplaintStatus = async (complaintId, status, user) => {
     },
   ]);
 };
+
 // ===============================
-// 7. Export
+// 7. Update Complaint
+// ===============================
+
+const updateComplaint = async (complaintId, complaintData, user) => {
+  const { title, description, category, priority } = complaintData;
+
+  // Find Complaint
+  const complaint = await Complaint.findById(complaintId);
+
+  if (!complaint) {
+    throw new AppError("Complaint not found.", 404);
+  }
+
+  // Student → Only own complaints
+  if (
+    user.role === ROLES.STUDENT &&
+    complaint.createdBy.toString() !== user._id.toString()
+  ) {
+    throw new AppError("You are not allowed to update this complaint.", 403);
+  }
+
+  // Warden → Complaint must belong to same hostel
+  if (
+    user.role === ROLES.WARDEN &&
+    complaint.hostel.toString() !== user.hostel.toString()
+  ) {
+    throw new AppError("You are not allowed to update this complaint.", 403);
+  }
+
+  // Workers cannot edit complaints
+  if (user.role === ROLES.WORKER) {
+    throw new AppError("Workers are not allowed to update complaints.", 403);
+  }
+
+  // Don't allow editing after completion
+  if (complaint.status === COMPLAINT_STATUS.COMPLETED) {
+    throw new AppError("Completed complaints cannot be edited.", 400);
+  }
+
+  // Update editable fields
+  complaint.title = title;
+  complaint.description = description;
+  complaint.category = category;
+  complaint.priority = priority;
+
+  await complaint.save();
+
+  return complaint.populate([
+    {
+      path: "createdBy",
+      select: "name email",
+    },
+    {
+      path: "assignedWorker",
+      select: "name email",
+    },
+    {
+      path: "assignedBy",
+      select: "name email",
+    },
+    {
+      path: "hostel",
+      select: "name code",
+    },
+  ]);
+};
+
+// ===============================
+// 8. Delete Complaint
+// ===============================
+
+const deleteComplaint = async (complaintId, user) => {
+  // Find Complaint
+  const complaint = await Complaint.findById(complaintId);
+
+  if (!complaint) {
+    throw new AppError("Complaint not found.", 404);
+  }
+
+  // Student → Only own pending complaints
+  if (user.role === ROLES.STUDENT) {
+    if (complaint.createdBy.toString() !== user._id.toString()) {
+      throw new AppError("You are not allowed to delete this complaint.", 403);
+    }
+
+    if (complaint.status !== COMPLAINT_STATUS.PENDING) {
+      throw new AppError("Only pending complaints can be deleted.", 400);
+    }
+  }
+
+  // Warden → Complaint must belong to same hostel
+  if (user.role === ROLES.WARDEN) {
+    if (complaint.hostel.toString() !== user.hostel.toString()) {
+      throw new AppError("You are not allowed to delete this complaint.", 403);
+    }
+  }
+
+  await complaint.deleteOne();
+
+  return;
+};
+
+// ===============================
+// 9. Export
 // ===============================
 
 export {
@@ -268,4 +372,6 @@ export {
   getComplaintById,
   assignWorker,
   updateComplaintStatus,
+  updateComplaint,
+  deleteComplaint,
 };

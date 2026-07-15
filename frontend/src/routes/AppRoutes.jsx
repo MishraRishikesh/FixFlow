@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import MainLayout from "../layouts/MainLayout";
+import DashboardLayout from "../layouts/DashboardLayout";
 import PublicLayout from "../layouts/PublicLayout";
 
 import LandingPage from "../pages/landing/LandingPage";
@@ -8,6 +8,7 @@ import LoginPage from "../pages/login/LoginPage";
 import DashboardPage from "../pages/dashboard/DashboardPage";
 import ProtectedRoute from "./ProtectedRoute";
 import PublicRoute from "./PublicRoute";
+import ComplaintsPage from "../pages/complaints/ComplaintsPage";
 
 function AppRoutes() {
   return (
@@ -27,7 +28,7 @@ function AppRoutes() {
         </Route>
 
         {/* Protected */}
-        <Route element={<MainLayout />}>
+        <Route element={<DashboardLayout />}>
           <Route
             path="/dashboard"
             element={
@@ -37,6 +38,14 @@ function AppRoutes() {
             }
           />
         </Route>
+        <Route
+          path="/complaints"
+          element={
+            <ProtectedRoute>
+              <ComplaintsPage />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </BrowserRouter>
   );

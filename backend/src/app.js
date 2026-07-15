@@ -6,6 +6,7 @@ import complaintRoutes from "./routes/complaintRoutes.js";
 import staffRoutes from "./routes/staffRoutes.js";
 import errorMiddleware from "./middleware/errorMiddleware.js";
 import healthRoutes from "./routes/healthRoutes.js";
+import dashboardRoutes from "./routes/dashboardRoutes.js";
 
 const app = express();
 
@@ -16,6 +17,7 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/hostels", hostelRoutes);
 app.use("/api/complaints", complaintRoutes);
+app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/staff", staffRoutes);
 
 app.get("/", (req, res) => {

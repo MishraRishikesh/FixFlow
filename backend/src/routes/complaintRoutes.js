@@ -10,6 +10,8 @@ import {
   getComplaintByIdController,
   assignWorkerController,
   updateComplaintStatusController,
+  updateComplaintController,
+  deleteComplaintController,
 } from "../controllers/complaintController.js";
 
 import { verifyToken } from "../middleware/authMiddleware.js";
@@ -33,6 +35,13 @@ router.post(
   verifyToken,
   authorize(ROLES.STUDENT, ROLES.WARDEN),
   createComplaintController,
+);
+// Update Complaint (Student and Warden Only)
+router.put(
+  "/:id",
+  verifyToken,
+  authorize(ROLES.STUDENT, ROLES.WARDEN),
+  updateComplaintController,
 );
 // Get Complaints
 router.get(
@@ -61,6 +70,13 @@ router.patch(
   verifyToken,
   authorize(ROLES.WORKER),
   updateComplaintStatusController,
+);
+// Delete Complaint (Student and Warden Only)
+router.delete(
+  "/:id",
+  verifyToken,
+  authorize(ROLES.STUDENT, ROLES.WARDEN),
+  deleteComplaintController,
 );
 // ===============================
 // 4. Export
