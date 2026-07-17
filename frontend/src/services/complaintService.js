@@ -15,7 +15,17 @@ export async function getComplaints() {
 }
 
 // ===============================
-// 3. Create Complaint
+// 3. Get Complaint By ID
+// ===============================
+
+export async function getComplaintById(id) {
+  const response = await api.get(`/complaints/${id}`);
+
+  return response.data.data;
+}
+
+// ===============================
+// 4. Create Complaint
 // ===============================
 
 export async function createComplaint(data) {
@@ -25,7 +35,31 @@ export async function createComplaint(data) {
 }
 
 // ===============================
-// 4. Update Complaint
+// 5. Assign Worker
+// ===============================
+
+export async function assignWorker(complaintId, workerId) {
+  const response = await api.patch(`/complaints/${complaintId}/assign`, {
+    workerId,
+  });
+
+  return response.data;
+}
+
+// ===============================
+// 6. Update Complaint Status
+// ===============================
+
+export async function updateComplaintStatus(complaintId, status) {
+  const response = await api.patch(`/complaints/${complaintId}/status`, {
+    status,
+  });
+
+  return response.data;
+}
+
+// ===============================
+// 7. Update Complaint
 // ===============================
 
 export async function updateComplaint(id, data) {
@@ -35,7 +69,7 @@ export async function updateComplaint(id, data) {
 }
 
 // ===============================
-// 5. Delete Complaint
+// 8. Delete Complaint
 // ===============================
 
 export async function deleteComplaint(id) {

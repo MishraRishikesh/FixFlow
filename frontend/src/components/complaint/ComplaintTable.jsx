@@ -1,57 +1,54 @@
+// ===============================
+// 1. Imports
+// ===============================
+
+import { useState } from "react";
+import toast from "react-hot-toast";
+
 import Card from "../ui/Card";
-import ComplaintTableHeader from "./ComplaintTableHeader";
-import ComplaintTableRow from "./ComplaintTableRow";
 import EmptyState from "../common/EmptyState";
 import TableSkeleton from "../common/TableSkeleton";
-import { useState } from "react";
+
+import ComplaintTableHeader from "./ComplaintTableHeader";
+import ComplaintTableRow from "./ComplaintTableRow";
 import ComplaintDetailsModal from "./ComplaintDetailsModal";
 import EditComplaintModal from "./EditComplaintModal";
 import DeleteComplaintModal from "./DeleteComplaintModal";
+import AssignWorkerModal from "./AssignWorkerModal";
+
 import { deleteComplaint } from "../../services/complaintService";
-import toast from "react-hot-toast";
+
+// ===============================
+// 2. Component
+// ===============================
 
 function ComplaintTable({ complaints, loading, loadComplaints }) {
   const [selectedComplaint, setSelectedComplaint] = useState(null);
-  const [open, setOpen] = useState(false);
+
+  const [selectedWorker, setSelectedWorker] = useState("");
+
+  const [viewOpen, setViewOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [assignOpen, setAssignOpen] = useState(false);
 
-  function closeViewModal() {
-    setOpen(false);
-    setSelectedComplaint(null);
-  }
-
-  function closeEditModal() {
-    setEditOpen(false);
-    setSelectedComplaint(null);
-  }
-
-  function closeDeleteModal() {
-    setDeleteOpen(false);
-    setSelectedComplaint(null);
-  }
-
-  const handleDelete = async () => {
+  async function handleDelete() {
     try {
       const response = await deleteComplaint(selectedComplaint._id);
 
       toast.success(response.message);
 
       setDeleteOpen(false);
-      setOpen(false);
-      setEditOpen(false);
-
       setSelectedComplaint(null);
 
-      if (loadComplaints) {
-        loadComplaints();
-      }
+      loadComplaints?.();
     } catch (error) {
       toast.error(
         error.response?.data?.message || "Failed to delete complaint.",
       );
     }
-  };
+  }
+
   return (
     <>
       <Card className="overflow-hidden">
@@ -78,7 +75,12 @@ function ComplaintTable({ complaints, loading, loadComplaints }) {
                     complaint={complaint}
                     onView={() => {
                       setSelectedComplaint(complaint);
-                      setOpen(true);
+                      setViewOpen(true);
+                    }}
+                    onAssign={() => {
+                      setSelectedComplaint(complaint);
+                      setSelectedWorker(complaint.assignedWorker?._id || "");
+                      setAssignOpen(true);
                     }}
                     onEdit={() => {
                       setSelectedComplaint(complaint);
@@ -97,33 +99,61 @@ function ComplaintTable({ complaints, loading, loadComplaints }) {
       </Card>
 
       <ComplaintDetailsModal
+        open={viewOpen}
         complaint={selectedComplaint}
-        open={open}
-        closeViewModal={closeViewModal}
+        onClose={() => {
+          setViewOpen(false);
+          setSelectedComplaint(null);
+        }}
+      />
+
+      <AssignWorkerModal
+        open={assignOpen}
+        complaint={selectedComplaint}
+        selectedWorker={selectedWorker}
+        setSelectedWorker={setSelectedWorker}
+        onClose={() => {
+          setAssignOpen(false);
+          setSelectedComplaint(null);
+          setSelectedWorker("");
+        }}
+        onSuccess={() => {
+          setAssignOpen(false);
+          setSelectedComplaint(null);
+          setSelectedWorker("");
+          loadComplaints?.();
+        }}
       />
 
       <EditComplaintModal
         open={editOpen}
         complaint={selectedComplaint}
-        closeEditModal={closeEditModal}
+        closeEditModal={() => {
+          setEditOpen(false);
+          setSelectedComplaint(null);
+        }}
         onSuccess={() => {
           setEditOpen(false);
           setSelectedComplaint(null);
-
-          if (loadComplaints) {
-            loadComplaints();
-          }
+          loadComplaints?.();
         }}
       />
 
       <DeleteComplaintModal
         open={deleteOpen}
         complaint={selectedComplaint}
-        closeDeleteModal={closeDeleteModal}
+        closeDeleteModal={() => {
+          setDeleteOpen(false);
+          setSelectedComplaint(null);
+        }}
         onDelete={handleDelete}
       />
     </>
   );
 }
+
+// ===============================
+// 3. Export
+// ===============================
 
 export default ComplaintTable;

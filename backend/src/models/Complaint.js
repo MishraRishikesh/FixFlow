@@ -72,6 +72,11 @@ const complaintSchema = new mongoose.Schema(
       default: null,
     },
 
+    assignedAt: {
+      type: Date,
+      default: null,
+    },
+
     images: [
       {
         type: String,

@@ -172,9 +172,20 @@ const assignWorker = async (complaintId, workerId, user) => {
     throw new AppError("Worker belongs to another hostel.", 400);
   }
 
+  // Worker must be active
+  if (!worker.isActive) {
+    throw new AppError("Worker is inactive.", 400);
+  }
+
+  // Completed complaints cannot be reassigned
+  if (complaint.status === COMPLAINT_STATUS.COMPLETED) {
+    throw new AppError("Completed complaints cannot be reassigned.", 400);
+  }
+
   // Assign Worker
   complaint.assignedWorker = worker._id;
   complaint.assignedBy = user._id;
+  complaint.assignedAt = new Date();
   complaint.status = COMPLAINT_STATUS.ASSIGNED;
 
   await complaint.save();
