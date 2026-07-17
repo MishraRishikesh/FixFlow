@@ -9,6 +9,7 @@ import DashboardPage from "../pages/dashboard/DashboardPage";
 import ProtectedRoute from "./ProtectedRoute";
 import PublicRoute from "./PublicRoute";
 import ComplaintsPage from "../pages/complaints/ComplaintsPage";
+import StaffPage from "../pages/staff/StaffPage";
 
 function AppRoutes() {
   return (
@@ -28,24 +29,19 @@ function AppRoutes() {
         </Route>
 
         {/* Protected */}
-        <Route element={<DashboardLayout />}>
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <DashboardPage />
-              </ProtectedRoute>
-            }
-          />
-        </Route>
         <Route
-          path="/complaints"
           element={
             <ProtectedRoute>
-              <ComplaintsPage />
+              <DashboardLayout />
             </ProtectedRoute>
           }
-        />
+        >
+          <Route path="/dashboard" element={<DashboardPage />} />
+
+          <Route path="/complaints" element={<ComplaintsPage />} />
+
+          <Route path="/staff" element={<StaffPage />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   );

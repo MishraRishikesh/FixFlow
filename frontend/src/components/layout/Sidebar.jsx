@@ -19,13 +19,11 @@ function Sidebar() {
 
       {/* Navigation */}
       <nav className="flex-1 space-y-2 p-4">
-        <nav className="flex-1 space-y-2 p-4">
-          {navigation.map(item => (
-            <NavItem key={item.path} to={item.path} icon={item.icon}>
-              {item.label}
-            </NavItem>
-          ))}
-        </nav>
+        {navigation.map(item => (
+          <NavItem key={item.path} to={item.path} icon={item.icon}>
+            {item.label}
+          </NavItem>
+        ))}
       </nav>
     </aside>
   );

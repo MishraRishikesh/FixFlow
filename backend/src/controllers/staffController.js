@@ -2,106 +2,32 @@
 // 1. Imports
 // ===============================
 
-import {
-  createWarden,
-  createWorker,
-  createStudent,
-  getStaff,
-  getStaffById,
-  updateStaff,
-  activateStaff,
-  deactivateStaff,
-  makeHeadWarden,
-} from "../services/staffService.js";
-import { ROLES } from "../constants/roles.js";
 import asyncHandler from "../utils/asyncHandler.js";
 
-// ===============================
-// 2. Create Warden
-// ===============================
-
-const createWardenController = asyncHandler(async (req, res) => {
-  const warden = await createWarden(req.body, req.user);
-
-  res.status(201).json({
-    success: true,
-    message: "Warden created successfully.",
-    data: warden,
-  });
-});
+import {
+  getStaff,
+  getStaffById,
+  createStaff,
+  updateStaff,
+  deleteStaff,
+} from "../services/staffService.js";
 
 // ===============================
-// 3. Create Worker
+// 2. Get Staff
 // ===============================
 
-const createWorkerController = asyncHandler(async (req, res) => {
-  const worker = await createWorker(req.body, req.user);
-
-  res.status(201).json({
-    success: true,
-    message: "Worker created successfully.",
-    data: worker,
-  });
-});
-
-// ===============================
-// 4. Create Student
-// ===============================
-
-const createStudentController = asyncHandler(async (req, res) => {
-  const student = await createStudent(req.body, req.user);
-
-  res.status(201).json({
-    success: true,
-    message: "Student created successfully.",
-    data: student,
-  });
-});
-
-// ===============================
-// 5. Get Wardens
-// ===============================
-
-const getWardens = asyncHandler(async (req, res) => {
-  const wardens = await getStaff(req.user, ROLES.WARDEN);
+const getStaffController = asyncHandler(async (req, res) => {
+  const staff = await getStaff(req.user);
 
   res.status(200).json({
     success: true,
-    count: wardens.length,
-    data: wardens,
+    count: staff.length,
+    data: staff,
   });
 });
 
 // ===============================
-// 6. Get Workers
-// ===============================
-
-const getWorkers = asyncHandler(async (req, res) => {
-  const workers = await getStaff(req.user, ROLES.WORKER);
-
-  res.status(200).json({
-    success: true,
-    count: workers.length,
-    data: workers,
-  });
-});
-
-// ===============================
-// 7. Get Students
-// ===============================
-
-const getStudents = asyncHandler(async (req, res) => {
-  const students = await getStaff(req.user, ROLES.STUDENT);
-
-  res.status(200).json({
-    success: true,
-    count: students.length,
-    data: students,
-  });
-});
-
-// ===============================
-// 8. Get Staff By ID
+// 3. Get Staff By ID
 // ===============================
 
 const getStaffByIdController = asyncHandler(async (req, res) => {
@@ -114,7 +40,21 @@ const getStaffByIdController = asyncHandler(async (req, res) => {
 });
 
 // ===============================
-// 10. Update Staff
+// 4. Create Staff
+// ===============================
+
+const createStaffController = asyncHandler(async (req, res) => {
+  const staff = await createStaff(req.body, req.user);
+
+  res.status(201).json({
+    success: true,
+    message: "Worker created successfully.",
+    data: staff,
+  });
+});
+
+// ===============================
+// 5. Update Staff
 // ===============================
 
 const updateStaffController = asyncHandler(async (req, res) => {
@@ -122,67 +62,31 @@ const updateStaffController = asyncHandler(async (req, res) => {
 
   res.status(200).json({
     success: true,
-    message: "Staff updated successfully.",
+    message: "Worker updated successfully.",
     data: staff,
   });
 });
 
 // ===============================
-// 11. Deactivate Staff
+// 6. Delete Staff
 // ===============================
 
-const deactivateStaffController = asyncHandler(async (req, res) => {
-  const staff = await deactivateStaff(req.params.id, req.user);
+const deleteStaffController = asyncHandler(async (req, res) => {
+  await deleteStaff(req.params.id, req.user);
 
   res.status(200).json({
     success: true,
-    message: "Staff deactivated successfully.",
-    data: staff,
+    message: "Worker deleted successfully.",
   });
 });
-
 // ===============================
-// 12. Activate Staff
-// ===============================
-
-const activateStaffController = asyncHandler(async (req, res) => {
-  const staff = await activateStaff(req.params.id, req.user);
-
-  res.status(200).json({
-    success: true,
-    message: "Staff activated successfully.",
-    data: staff,
-  });
-});
-
-// ===============================
-// 13. Make Head Warden
-// ===============================
-
-const makeHeadWardenController = asyncHandler(async (req, res) => {
-  const warden = await makeHeadWarden(req.params.id, req.user);
-
-  res.status(200).json({
-    success: true,
-    message: "Head Warden transferred successfully.",
-    data: warden,
-  });
-});
-
-// ===============================
-// 14. Export
+// 7. Export
 // ===============================
 
 export {
-  createWardenController,
-  createWorkerController,
-  createStudentController,
-  getWardens,
-  getWorkers,
-  getStudents,
+  getStaffController,
   getStaffByIdController,
+  createStaffController,
   updateStaffController,
-  deactivateStaffController,
-  activateStaffController,
-  makeHeadWardenController,
+  deleteStaffController,
 };
