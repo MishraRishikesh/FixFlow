@@ -1,7 +1,3 @@
-// ===============================
-// 1. Imports
-// ===============================
-
 import express from "express";
 
 import {
@@ -9,27 +5,24 @@ import {
   createStaffController,
   getStaffByIdController,
   updateStaffController,
-  deleteStaffController,
+  deactivateStaffController,
+  activateStaffController,
 } from "../controllers/staffController.js";
 
 import { verifyToken } from "../middleware/authMiddleware.js";
 import { authorize } from "../middleware/authorize.js";
 import { ROLES } from "../constants/roles.js";
 
-// ===============================
-// 2. Router
-// ===============================
-
 const router = express.Router();
 
 // ===============================
-// 3. Routes
+// Staff Routes
 // ===============================
 
-// Get All Staff
+// Get all workers
 router.get("/", verifyToken, authorize(ROLES.WARDEN), getStaffController);
 
-// Get Staff By ID
+// Get worker by ID
 router.get(
   "/:id",
   verifyToken,
@@ -37,22 +30,26 @@ router.get(
   getStaffByIdController,
 );
 
-// Create Staff
+// Create worker
 router.post("/", verifyToken, authorize(ROLES.WARDEN), createStaffController);
 
-// Update Staff
+// Update worker
 router.put("/:id", verifyToken, authorize(ROLES.WARDEN), updateStaffController);
 
-// Delete Staff
-router.delete(
-  "/:id",
+// Deactivate worker
+router.patch(
+  "/:id/deactivate",
   verifyToken,
   authorize(ROLES.WARDEN),
-  deleteStaffController,
+  deactivateStaffController,
 );
 
-// ===============================
-// 4. Export
-// ===============================
+// Activate worker
+router.patch(
+  "/:id/activate",
+  verifyToken,
+  authorize(ROLES.WARDEN),
+  activateStaffController,
+);
 
 export default router;

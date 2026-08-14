@@ -1,8 +1,5 @@
-// ===============================
-// 1. Imports
-// ===============================
-
 import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
 import Card from "../ui/Card";
@@ -15,31 +12,61 @@ import StaffDetailsModal from "./StaffDetailsModal";
 import EditStaffModal from "./EditStaffModal";
 import DeleteStaffModal from "./DeleteStaffModal";
 
-import { deleteStaff } from "../../services/staffService";
+import { activateStaff, deactivateStaff } from "../../services/staffService";
 
-// ===============================
-// 2. Component
-// ===============================
+function StaffTable({ staff, loading, statusFilter }) {
+  const queryClient = useQueryClient();
 
-function StaffTable({ staff, loading, refreshStaff }) {
   const [selectedStaff, setSelectedStaff] = useState(null);
 
   const [viewOpen, setViewOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
 
+  const filteredStaff = staff.filter(worker => {
+    if (statusFilter === "active") {
+      return worker.isActive;
+    }
+
+    if (statusFilter === "inactive") {
+      return !worker.isActive;
+    }
+
+    return true;
+  });
+
   async function handleDelete() {
     try {
-      const response = await deleteStaff(selectedStaff._id);
+      const response = await deactivateStaff(selectedStaff._id);
 
-      toast.success(response.message || "Worker deleted successfully.");
+      toast.success(response.message || "Worker deactivated successfully.");
 
       setDeleteOpen(false);
       setSelectedStaff(null);
 
-      refreshStaff?.();
+      await queryClient.invalidateQueries({
+        queryKey: ["staff"],
+      });
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to delete worker.");
+      toast.error(
+        error.response?.data?.message || "Failed to deactivate worker.",
+      );
+    }
+  }
+
+  async function handleActivate(worker) {
+    try {
+      const response = await activateStaff(worker._id);
+
+      toast.success(response.message || "Worker activated successfully.");
+
+      await queryClient.invalidateQueries({
+        queryKey: ["staff"],
+      });
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message || "Failed to activate worker.",
+      );
     }
   }
 
@@ -53,9 +80,9 @@ function StaffTable({ staff, loading, refreshStaff }) {
             <TableSkeleton />
           ) : (
             <tbody>
-              {staff.length === 0 ? (
+              {filteredStaff.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="p-8">
+                  <td colSpan={7} className="p-8">
                     <EmptyState
                       title="No workers found"
                       description="Add your first worker to get started."
@@ -63,7 +90,7 @@ function StaffTable({ staff, loading, refreshStaff }) {
                   </td>
                 </tr>
               ) : (
-                staff.map(worker => (
+                filteredStaff.map(worker => (
                   <StaffTableRow
                     key={worker._id}
                     staff={worker}
@@ -79,6 +106,7 @@ function StaffTable({ staff, loading, refreshStaff }) {
                       setSelectedStaff(worker);
                       setDeleteOpen(true);
                     }}
+                    onActivate={() => handleActivate(worker)}
                   />
                 ))
               )}
@@ -103,10 +131,13 @@ function StaffTable({ staff, loading, refreshStaff }) {
           setEditOpen(false);
           setSelectedStaff(null);
         }}
-        onSuccess={() => {
+        onSuccess={async () => {
           setEditOpen(false);
           setSelectedStaff(null);
-          refreshStaff?.();
+
+          await queryClient.invalidateQueries({
+            queryKey: ["staff"],
+          });
         }}
       />
 

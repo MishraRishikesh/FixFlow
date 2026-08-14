@@ -1,14 +1,8 @@
-// ===============================
-// 1. Imports
-// ===============================
+import { Eye, Pencil, RotateCcw, Trash2 } from "lucide-react";
 
-import { Eye, Pencil, Trash2 } from "lucide-react";
+function StaffTableRow({ staff, onView, onEdit, onDelete, onActivate }) {
+  const isActive = staff.isActive;
 
-// ===============================
-// 2. Component
-// ===============================
-
-function StaffTableRow({ staff, onView, onEdit, onDelete }) {
   return (
     <tr className="border-t hover:bg-slate-50">
       {/* Name */}
@@ -28,6 +22,20 @@ function StaffTableRow({ staff, onView, onEdit, onDelete }) {
       <td className="px-6 py-4">
         <span className="rounded-full bg-blue-100 px-3 py-1 text-sm font-medium capitalize text-blue-700">
           {staff.role}
+        </span>
+      </td>
+
+      {/* Status */}
+
+      <td className="px-6 py-4">
+        <span
+          className={`rounded-full px-3 py-1 text-sm font-medium ${
+            isActive
+              ? "bg-green-100 text-green-700"
+              : "bg-gray-100 text-gray-600"
+          }`}
+        >
+          {isActive ? "Active" : "Inactive"}
         </span>
       </td>
 
@@ -53,29 +61,37 @@ function StaffTableRow({ staff, onView, onEdit, onDelete }) {
             <Eye size={18} />
           </button>
 
-          <button
-            onClick={onEdit}
-            className="rounded-lg p-2 transition-all duration-200 hover:scale-105 hover:bg-slate-100 active:scale-95"
-            title="Edit"
-          >
-            <Pencil size={18} />
-          </button>
+          {isActive ? (
+            <>
+              <button
+                onClick={onEdit}
+                className="rounded-lg p-2 transition-all duration-200 hover:scale-105 hover:bg-slate-100 active:scale-95"
+                title="Edit"
+              >
+                <Pencil size={18} />
+              </button>
 
-          <button
-            onClick={onDelete}
-            className="rounded-lg p-2 transition-all duration-200 hover:scale-105 hover:bg-red-50 active:scale-95"
-            title="Delete"
-          >
-            <Trash2 size={18} className="text-red-600" />
-          </button>
+              <button
+                onClick={onDelete}
+                className="rounded-lg p-2 transition-all duration-200 hover:scale-105 hover:bg-red-50 active:scale-95"
+                title="Deactivate"
+              >
+                <Trash2 size={18} className="text-red-600" />
+              </button>
+            </>
+          ) : (
+            <button
+              onClick={onActivate}
+              className="rounded-lg p-2 transition-all duration-200 hover:scale-105 hover:bg-green-50 active:scale-95"
+              title="Activate"
+            >
+              <RotateCcw size={18} className="text-green-600" />
+            </button>
+          )}
         </div>
       </td>
     </tr>
   );
 }
-
-// ===============================
-// 3. Export
-// ===============================
 
 export default StaffTableRow;

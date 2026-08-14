@@ -1,52 +1,55 @@
-// ===============================
-// 1. Imports
-// ===============================
-
-import { useEffect, useMemo, useState } from "react";
-import toast from "react-hot-toast";
-
-import { getStaff } from "../../services/staffService";
+import { useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 
 import StaffToolbar from "../../components/staff/StaffToolbar";
 import StaffTable from "../../components/staff/StaffTable";
 
-// ===============================
-// 2. Component
-// ===============================
+import { getStaff } from "../../services/staffService";
 
 function StaffPage() {
-  const [staff, setStaff] = useState([]);
-  const [loading, setLoading] = useState(true);
-
   const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("active");
 
-  async function refreshStaff() {
-    try {
-      const data = await getStaff();
-
-      setStaff(data);
-    } catch (error) {
-      console.error(error);
-      toast.error("Failed to load workers.");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  useEffect(() => {
-    refreshStaff();
-  }, []);
+  const {
+    data: staff = [],
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["staff"],
+    queryFn: getStaff,
+  });
 
   const filteredStaff = useMemo(() => {
-    const search = searchTerm.toLowerCase();
+    const search = searchTerm.trim().toLowerCase();
+
+    if (!search) {
+      return staff;
+    }
 
     return staff.filter(worker => {
       return (
-        worker.name.toLowerCase().includes(search) ||
-        worker.email.toLowerCase().includes(search)
+        worker.name?.toLowerCase().includes(search) ||
+        worker.email?.toLowerCase().includes(search) ||
+        worker.phone?.toLowerCase().includes(search)
       );
     });
   }, [staff, searchTerm]);
+
+  if (isError) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-3xl font-bold">Workers</h1>
+
+          <p className="text-gray-500">Manage hostel maintenance workers.</p>
+        </div>
+
+        <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-600">
+          Failed to load workers.
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -57,22 +60,19 @@ function StaffPage() {
       </div>
 
       <StaffToolbar
-        refreshStaff={refreshStaff}
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
+        statusFilter={statusFilter}
+        setStatusFilter={setStatusFilter}
       />
 
       <StaffTable
         staff={filteredStaff}
-        loading={loading}
-        refreshStaff={refreshStaff}
+        loading={isLoading}
+        statusFilter={statusFilter}
       />
     </div>
   );
 }
-
-// ===============================
-// 3. Export
-// ===============================
 
 export default StaffPage;

@@ -1,7 +1,3 @@
-// ===============================
-// 1. Imports
-// ===============================
-
 import asyncHandler from "../utils/asyncHandler.js";
 
 import {
@@ -9,11 +5,12 @@ import {
   getStaffById,
   createStaff,
   updateStaff,
-  deleteStaff,
+  deactivateStaff,
+  activateStaff,
 } from "../services/staffService.js";
 
 // ===============================
-// 2. Get Staff
+// 1. Get Staff
 // ===============================
 
 const getStaffController = asyncHandler(async (req, res) => {
@@ -27,7 +24,7 @@ const getStaffController = asyncHandler(async (req, res) => {
 });
 
 // ===============================
-// 3. Get Staff By ID
+// 2. Get Staff By ID
 // ===============================
 
 const getStaffByIdController = asyncHandler(async (req, res) => {
@@ -40,7 +37,7 @@ const getStaffByIdController = asyncHandler(async (req, res) => {
 });
 
 // ===============================
-// 4. Create Staff
+// 3. Create Staff
 // ===============================
 
 const createStaffController = asyncHandler(async (req, res) => {
@@ -54,7 +51,7 @@ const createStaffController = asyncHandler(async (req, res) => {
 });
 
 // ===============================
-// 5. Update Staff
+// 4. Update Staff
 // ===============================
 
 const updateStaffController = asyncHandler(async (req, res) => {
@@ -68,17 +65,33 @@ const updateStaffController = asyncHandler(async (req, res) => {
 });
 
 // ===============================
-// 6. Delete Staff
+// 5. Deactivate Staff
 // ===============================
 
-const deleteStaffController = asyncHandler(async (req, res) => {
-  await deleteStaff(req.params.id, req.user);
+const deactivateStaffController = asyncHandler(async (req, res) => {
+  const staff = await deactivateStaff(req.params.id, req.user);
 
   res.status(200).json({
     success: true,
-    message: "Worker deleted successfully.",
+    message: "Worker deactivated successfully.",
+    data: staff,
   });
 });
+
+// ===============================
+// 6. Activate Staff
+// ===============================
+
+const activateStaffController = asyncHandler(async (req, res) => {
+  const staff = await activateStaff(req.params.id, req.user);
+
+  res.status(200).json({
+    success: true,
+    message: "Worker activated successfully.",
+    data: staff,
+  });
+});
+
 // ===============================
 // 7. Export
 // ===============================
@@ -88,5 +101,6 @@ export {
   getStaffByIdController,
   createStaffController,
   updateStaffController,
-  deleteStaffController,
+  deactivateStaffController,
+  activateStaffController,
 };

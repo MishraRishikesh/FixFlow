@@ -1,62 +1,37 @@
-// ===============================
-// 1. Imports
-// ===============================
-
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 
 import StatsGrid from "../../components/dashboard/StatsGrid";
 import RecentComplaints from "../../components/dashboard/RecentComplaints";
 import QuickActions from "../../components/dashboard/QuickActions";
-
-import { getDashboard } from "../../services/dashboardService";
 import DashboardCharts from "../../components/dashboard/DashboardCharts";
 import ActivityTimeline from "../../components/dashboard/ActivityTimeline";
 
-// ===============================
-// 2. Component
-// ===============================
+import { getDashboard } from "../../services/dashboardService";
 
 function DashboardPage() {
-  const [dashboard, setDashboard] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const {
+    data: dashboard,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["dashboard"],
+    queryFn: getDashboard,
+  });
 
-  // ===============================
-  // Load Dashboard
-  // ===============================
-
-  useEffect(() => {
-    async function loadDashboard() {
-      try {
-        const data = await getDashboard();
-
-        setDashboard(data);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    loadDashboard();
-  }, []);
-
-  // ===============================
-  // Loading
-  // ===============================
-
-  if (loading) {
+  if (isLoading) {
     return <div className="p-6">Loading dashboard...</div>;
   }
 
-  // ===============================
-  // UI
-  // ===============================
+  if (isError || !dashboard) {
+    return <div className="p-6 text-red-600">Failed to load dashboard.</div>;
+  }
 
   return (
     <div className="space-y-6">
       <StatsGrid stats={dashboard.stats} />
 
       <DashboardCharts charts={dashboard.charts} />
+
       <ActivityTimeline activities={dashboard.recentActivity} />
 
       <div className="grid gap-6 lg:grid-cols-2">

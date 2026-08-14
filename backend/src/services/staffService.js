@@ -1,27 +1,22 @@
-// ===============================
-// 1. Imports
-// ===============================
-
 import Staff from "../models/Staff.js";
 import { ROLES } from "../constants/roles.js";
 import AppError from "../utils/appError.js";
 
 // ===============================
-// 2. Get Staff
+// 1. Get Staff
 // ===============================
 
 const getStaff = async user => {
   return Staff.find({
     hostel: user.hostel,
     role: ROLES.WORKER,
-    isActive: true,
   })
     .select("-password")
-    .sort({ createdAt: -1 });
+    .sort({ isActive: -1, createdAt: -1 });
 };
 
 // ===============================
-// 3. Get Staff By ID
+// 2. Get Staff By ID
 // ===============================
 
 const getStaffById = async (staffId, user) => {
@@ -39,23 +34,32 @@ const getStaffById = async (staffId, user) => {
 };
 
 // ===============================
-// 4. Create Staff
+// 3. Create Staff
 // ===============================
 
 const createStaff = async (staffData, user) => {
   const { name, email, password, phone } = staffData;
 
-  // Email already exists
-  const existingStaff = await Staff.findOne({ email });
+  const normalizedEmail = email?.trim().toLowerCase();
+
+  const existingStaff = await Staff.findOne({
+    email: normalizedEmail,
+  });
 
   if (existingStaff) {
+    if (!existingStaff.isActive) {
+      throw new AppError(
+        "A worker with this email already exists but is inactive. Activate the existing worker instead.",
+        409,
+      );
+    }
+
     throw new AppError("Email already registered.", 409);
   }
 
-  // Create Worker
   const staff = await Staff.create({
     name,
-    email,
+    email: normalizedEmail,
     password,
     phone,
     role: ROLES.WORKER,
@@ -66,8 +70,8 @@ const createStaff = async (staffData, user) => {
   return staff;
 };
 
-// // ===============================
-// 5. Update Staff
+// ===============================
+// 4. Update Staff
 // ===============================
 
 const updateStaff = async (staffId, staffData, user) => {
@@ -83,15 +87,19 @@ const updateStaff = async (staffId, staffData, user) => {
 
   const { name, email, phone } = staffData;
 
-  // Duplicate Email Check
-  if (email && email !== staff.email) {
-    const existingStaff = await Staff.findOne({ email });
+  if (email && email.toLowerCase() !== staff.email) {
+    const normalizedEmail = email.trim().toLowerCase();
+
+    const existingStaff = await Staff.findOne({
+      email: normalizedEmail,
+      _id: { $ne: staffId },
+    });
 
     if (existingStaff) {
       throw new AppError("Email already registered.", 409);
     }
 
-    staff.email = email;
+    staff.email = normalizedEmail;
   }
 
   if (name !== undefined) {
@@ -108,10 +116,10 @@ const updateStaff = async (staffId, staffData, user) => {
 };
 
 // ===============================
-// 6. Delete Staff
+// 5. Deactivate Staff
 // ===============================
 
-const deleteStaff = async (staffId, user) => {
+const deactivateStaff = async (staffId, user) => {
   const staff = await Staff.findOne({
     _id: staffId,
     hostel: user.hostel,
@@ -122,7 +130,37 @@ const deleteStaff = async (staffId, user) => {
     throw new AppError("Worker not found.", 404);
   }
 
+  if (!staff.isActive) {
+    throw new AppError("Worker is already inactive.", 400);
+  }
+
   staff.isActive = false;
+
+  await staff.save();
+
+  return staff;
+};
+
+// ===============================
+// 6. Activate Staff
+// ===============================
+
+const activateStaff = async (staffId, user) => {
+  const staff = await Staff.findOne({
+    _id: staffId,
+    hostel: user.hostel,
+    role: ROLES.WORKER,
+  });
+
+  if (!staff) {
+    throw new AppError("Worker not found.", 404);
+  }
+
+  if (staff.isActive) {
+    throw new AppError("Worker is already active.", 400);
+  }
+
+  staff.isActive = true;
 
   await staff.save();
 
@@ -133,4 +171,11 @@ const deleteStaff = async (staffId, user) => {
 // 7. Export
 // ===============================
 
-export { getStaff, getStaffById, createStaff, updateStaff, deleteStaff };
+export {
+  getStaff,
+  getStaffById,
+  createStaff,
+  updateStaff,
+  deactivateStaff,
+  activateStaff,
+};

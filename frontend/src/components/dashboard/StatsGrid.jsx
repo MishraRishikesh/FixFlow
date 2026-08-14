@@ -6,19 +6,19 @@ function StatsGrid({ stats = {} }) {
   const cards = [
     {
       title: "Pending Complaints",
-      value: stats.pendingComplaints ?? 0,
+      value: stats.pending ?? 0,
       icon: Clock3,
       color: "orange",
     },
     {
       title: "Active Complaints",
-      value: stats.activeComplaints ?? 0,
+      value: (stats.assigned ?? 0) + (stats.inProgress ?? 0),
       icon: AlertCircle,
       color: "blue",
     },
     {
       title: "Resolved Complaints",
-      value: stats.resolvedComplaints ?? 0,
+      value: stats.completed ?? 0,
       icon: CheckCircle2,
       color: "green",
     },
