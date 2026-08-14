@@ -4,6 +4,7 @@ import cors from "cors";
 import hostelRoutes from "./routes/hostelRoutes.js";
 import complaintRoutes from "./routes/complaintRoutes.js";
 import staffRoutes from "./routes/staffRoutes.js";
+import studentRoutes from "./routes/studentRoutes.js";
 import errorMiddleware from "./middleware/errorMiddleware.js";
 import healthRoutes from "./routes/healthRoutes.js";
 import dashboardRoutes from "./routes/dashboardRoutes.js";
@@ -19,6 +20,7 @@ app.use("/api/hostels", hostelRoutes);
 app.use("/api/complaints", complaintRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/staff", staffRoutes);
+app.use("/api/students", studentRoutes);
 
 app.get("/", (req, res) => {
   res.json({
@@ -28,6 +30,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/health", healthRoutes);
+
 // Global Error Handler
 app.use(errorMiddleware);
 

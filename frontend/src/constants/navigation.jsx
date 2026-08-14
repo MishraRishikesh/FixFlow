@@ -4,6 +4,7 @@ import {
   Users,
   Building2,
   Settings,
+  GraduationCap,
 } from "lucide-react";
 
 export const navigation = [
@@ -26,6 +27,11 @@ export const navigation = [
     label: "Hostel",
     path: "/hostel",
     icon: Building2,
+  },
+  {
+    label: "Students",
+    path: "/students",
+    icon: GraduationCap,
   },
   {
     label: "Settings",
