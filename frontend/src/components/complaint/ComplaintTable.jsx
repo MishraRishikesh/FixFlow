@@ -1,14 +1,10 @@
-// ===============================
-// 1. Imports
-// ===============================
-
 import { useState } from "react";
 import toast from "react-hot-toast";
 
 import Card from "../ui/Card";
 import EmptyState from "../common/EmptyState";
+import Modal from "../common/Modal";
 import TableSkeleton from "../common/TableSkeleton";
-
 import ComplaintTableHeader from "./ComplaintTableHeader";
 import ComplaintTableRow from "./ComplaintTableRow";
 import ComplaintDetailsModal from "./ComplaintDetailsModal";
@@ -16,21 +12,40 @@ import EditComplaintModal from "./EditComplaintModal";
 import DeleteComplaintModal from "./DeleteComplaintModal";
 import AssignWorkerModal from "./AssignWorkerModal";
 
-import { deleteComplaint } from "../../services/complaintService";
+import {
+  deleteComplaint,
+  updateComplaintStatus,
+} from "../../services/complaintService";
 
-// ===============================
-// 2. Component
-// ===============================
+import useAuth from "../../hooks/useAuth";
 
 function ComplaintTable({ complaints, loading, loadComplaints }) {
-  const [selectedComplaint, setSelectedComplaint] = useState(null);
+  const { user } = useAuth();
 
+  const [selectedComplaint, setSelectedComplaint] = useState(null);
   const [selectedWorker, setSelectedWorker] = useState("");
 
   const [viewOpen, setViewOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [assignOpen, setAssignOpen] = useState(false);
+  const [statusOpen, setStatusOpen] = useState(false);
+
+  const isWorker = user?.role === "worker";
+
+  const nextStatus =
+    selectedComplaint?.status === "assigned"
+      ? "in_progress"
+      : selectedComplaint?.status === "in_progress"
+        ? "completed"
+        : null;
+
+  const nextStatusLabel =
+    nextStatus === "in_progress"
+      ? "In Progress"
+      : nextStatus === "completed"
+        ? "Completed"
+        : "";
 
   async function handleDelete() {
     try {
@@ -45,6 +60,30 @@ function ComplaintTable({ complaints, loading, loadComplaints }) {
     } catch (error) {
       toast.error(
         error.response?.data?.message || "Failed to delete complaint.",
+      );
+    }
+  }
+
+  async function handleStatusUpdate() {
+    if (!selectedComplaint || !nextStatus) {
+      return;
+    }
+
+    try {
+      const response = await updateComplaintStatus(
+        selectedComplaint._id,
+        nextStatus,
+      );
+
+      toast.success(response.message);
+
+      setStatusOpen(false);
+      setSelectedComplaint(null);
+
+      loadComplaints?.();
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message || "Failed to update complaint status.",
       );
     }
   }
@@ -73,9 +112,14 @@ function ComplaintTable({ complaints, loading, loadComplaints }) {
                   <ComplaintTableRow
                     key={complaint._id}
                     complaint={complaint}
+                    isWorker={isWorker}
                     onView={() => {
                       setSelectedComplaint(complaint);
                       setViewOpen(true);
+                    }}
+                    onStatusChange={() => {
+                      setSelectedComplaint(complaint);
+                      setStatusOpen(true);
                     }}
                     onAssign={() => {
                       setSelectedComplaint(complaint);
@@ -148,12 +192,49 @@ function ComplaintTable({ complaints, loading, loadComplaints }) {
         }}
         onDelete={handleDelete}
       />
+
+      <Modal
+        open={statusOpen}
+        title="Update Complaint Status"
+        onClose={() => {
+          setStatusOpen(false);
+          setSelectedComplaint(null);
+        }}
+        maxWidth="max-w-md"
+      >
+        <div className="space-y-5">
+          <p className="text-slate-600">
+            Change <strong>{selectedComplaint?.title}</strong> from{" "}
+            <strong className="capitalize">
+              {selectedComplaint?.status?.replace("_", " ")}
+            </strong>{" "}
+            to <strong>{nextStatusLabel}</strong>?
+          </p>
+
+          <div className="flex justify-end gap-3">
+            <button
+              type="button"
+              onClick={() => {
+                setStatusOpen(false);
+                setSelectedComplaint(null);
+              }}
+              className="rounded-lg border px-4 py-2"
+            >
+              Cancel
+            </button>
+
+            <button
+              type="button"
+              onClick={handleStatusUpdate}
+              className="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+            >
+              Confirm
+            </button>
+          </div>
+        </div>
+      </Modal>
     </>
   );
 }
-
-// ===============================
-// 3. Export
-// ===============================
 
 export default ComplaintTable;

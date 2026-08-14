@@ -43,7 +43,14 @@ function ComplaintForm({ onSuccess, complaint = null, mode = "create" }) {
         onSuccess();
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || "Operation failed.");
+      console.error("Create complaint error:", error);
+
+      toast.error(
+        error.response?.data?.message ||
+          error.response?.data?.error ||
+          error.message ||
+          "Operation failed.",
+      );
     }
   };
 
