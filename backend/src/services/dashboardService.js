@@ -6,7 +6,6 @@ import Complaint from "../models/Complaint.js";
 import Staff from "../models/Staff.js";
 
 import { COMPLAINT_STATUS } from "../constants/complaint.js";
-
 import { ROLES } from "../constants/roles.js";
 
 // ===============================
@@ -28,7 +27,7 @@ const getStatusSummary = async filter => {
     },
   ]);
 
-  const summary = {
+  const stats = {
     total: 0,
     pending: 0,
     assigned: 0,
@@ -38,32 +37,35 @@ const getStatusSummary = async filter => {
   };
 
   data.forEach(item => {
-    summary.total += item.count;
+    stats.total += item.count;
 
     switch (item._id) {
       case COMPLAINT_STATUS.PENDING:
-        summary.pending = item.count;
+        stats.pending = item.count;
         break;
 
       case COMPLAINT_STATUS.ASSIGNED:
-        summary.assigned = item.count;
+        stats.assigned = item.count;
         break;
 
       case COMPLAINT_STATUS.IN_PROGRESS:
-        summary.inProgress = item.count;
+        stats.inProgress = item.count;
         break;
 
       case COMPLAINT_STATUS.COMPLETED:
-        summary.completed = item.count;
+        stats.completed = item.count;
         break;
 
       case COMPLAINT_STATUS.REJECTED:
-        summary.rejected = item.count;
+        stats.rejected = item.count;
+        break;
+
+      default:
         break;
     }
   });
 
-  return summary;
+  return stats;
 };
 
 const getChartData = async filter => {
@@ -100,11 +102,30 @@ const getChartData = async filter => {
   ]);
 
   return {
-    status,
-    category,
-    priority,
+    status: status.map(item => ({
+      name: item._id,
+      count: item.count,
+    })),
+
+    category: category.map(item => ({
+      name: item._id,
+      count: item.count,
+    })),
+
+    priority: priority.map(item => ({
+      name: item._id,
+      count: item.count,
+    })),
   };
 };
+
+const getRecentActivity = filter =>
+  Complaint.find(filter)
+    .populate("createdBy", "name")
+    .populate("assignedWorker", "name")
+    .sort({ updatedAt: -1 })
+    .limit(8)
+    .select("title status updatedAt createdAt createdBy assignedWorker");
 
 const getRecentComplaints = filter =>
   Complaint.find(filter)
@@ -125,15 +146,20 @@ const getStudentDashboard = async user => {
     createdBy: user._id,
   };
 
-  const [summary, recentComplaints] = await Promise.all([
+  const [stats, recentComplaints, recentActivity] = await Promise.all([
     getStatusSummary(filter),
     getRecentComplaints(filter),
+    getRecentActivity(filter),
   ]);
 
+  stats.completionRate =
+    stats.total === 0 ? 0 : Math.round((stats.completed / stats.total) * 100);
+
   return {
-    summary,
+    stats,
     charts: null,
     recentComplaints,
+    recentActivity,
   };
 };
 
@@ -146,15 +172,20 @@ const getWorkerDashboard = async user => {
     assignedWorker: user._id,
   };
 
-  const [summary, recentComplaints] = await Promise.all([
+  const [stats, recentComplaints, recentActivity] = await Promise.all([
     getStatusSummary(filter),
     getRecentComplaints(filter),
+    getRecentActivity(filter),
   ]);
 
+  stats.completionRate =
+    stats.total === 0 ? 0 : Math.round((stats.completed / stats.total) * 100);
+
   return {
-    summary,
+    stats,
     charts: null,
     recentComplaints,
+    recentActivity,
   };
 };
 
@@ -181,9 +212,11 @@ const getWardenDashboard = async user => {
     studentFilter.hostel = user.hostel;
   }
 
-  const [summary, workers, students, charts, recentComplaints] =
+  const [stats, recentActivity, workers, students, charts, recentComplaints] =
     await Promise.all([
       getStatusSummary(complaintFilter),
+
+      getRecentActivity(complaintFilter),
 
       Staff.countDocuments(workerFilter),
 
@@ -194,13 +227,17 @@ const getWardenDashboard = async user => {
       getRecentComplaints(complaintFilter),
     ]);
 
-  summary.workers = workers;
-  summary.students = students;
+  stats.workers = workers;
+  stats.students = students;
+
+  stats.completionRate =
+    stats.total === 0 ? 0 : Math.round((stats.completed / stats.total) * 100);
 
   return {
-    summary,
+    stats,
     charts,
     recentComplaints,
+    recentActivity,
   };
 };
 

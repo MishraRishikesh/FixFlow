@@ -9,6 +9,8 @@ import RecentComplaints from "../../components/dashboard/RecentComplaints";
 import QuickActions from "../../components/dashboard/QuickActions";
 
 import { getDashboard } from "../../services/dashboardService";
+import DashboardCharts from "../../components/dashboard/DashboardCharts";
+import ActivityTimeline from "../../components/dashboard/ActivityTimeline";
 
 // ===============================
 // 2. Component
@@ -51,13 +53,14 @@ function DashboardPage() {
   // ===============================
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <StatsGrid stats={dashboard.stats} />
 
-      <div className="grid gap-8 xl:grid-cols-3">
-        <div className="xl:col-span-2">
-          <RecentComplaints complaints={dashboard.recentComplaints} />
-        </div>
+      <DashboardCharts charts={dashboard.charts} />
+      <ActivityTimeline activities={dashboard.recentActivity} />
+
+      <div className="grid gap-6 lg:grid-cols-2">
+        <RecentComplaints complaints={dashboard.recentComplaints} />
 
         <QuickActions />
       </div>

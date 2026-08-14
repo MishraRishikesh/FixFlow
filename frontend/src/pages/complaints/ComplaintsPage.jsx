@@ -1,80 +1,90 @@
-import { useEffect, useState } from "react";
+// ===============================
+// 1. Imports
+// ===============================
 
-import ComplaintTable from "../../components/complaint/ComplaintTable";
-import { getComplaints } from "../../services/complaintService";
-import ComplaintToolbar from "../../components/complaint/ComplaintToolbar";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
-function ComplaintsPage() {
-  const [complaints, setComplaints] = useState([]);
-  const [loading, setLoading] = useState(true);
+import ComplaintTable from "../../components/complaint/ComplaintTable";
+import ComplaintToolbar from "../../components/complaint/ComplaintToolbar";
+import { getComplaints } from "../../services/complaintService";
 
+// ===============================
+// 2. Component
+// ===============================
+
+function ComplaintsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
 
-  useEffect(() => {
-    async function fetchComplaints() {
-      try {
-        const data = await getComplaints();
+  // ===============================
+  // Fetch Complaints
+  // ===============================
 
-        setComplaints(data);
-      } catch (error) {
-        toast.error("Failed to load complaints.");
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    }
+  const { data, isLoading, isError, error, refetch } = useQuery({
+    queryKey: ["complaints", searchTerm, statusFilter],
+    queryFn: () =>
+      getComplaints({
+        search: searchTerm,
+        status: statusFilter === "all" ? "" : statusFilter,
+        page: 1,
+        limit: 10,
+        sort: "-createdAt",
+      }),
+  });
 
-    fetchComplaints();
-  }, []);
+  // ===============================
+  // Error Handling
+  // ===============================
 
-  async function loadComplaints() {
-    try {
-      const data = await getComplaints();
-      setComplaints(data);
-    } catch (error) {
-      toast.error("Failed to load complaints.");
-      console.error(error);
-    }
+  if (isError) {
+    toast.error(error?.response?.data?.message || "Failed to load complaints.");
   }
 
-  const filteredComplaints = complaints.filter(complaint => {
-    const search = searchTerm.toLowerCase();
+  // ===============================
+  // Data
+  // ===============================
 
-    const matchesSearch =
-      complaint.title.toLowerCase().includes(search) ||
-      complaint.category.toLowerCase().includes(search);
+  const complaints = data?.data || [];
 
-    const matchesStatus =
-      statusFilter === "all" || complaint.status === statusFilter;
-
-    return matchesSearch && matchesStatus;
-  });
+  // ===============================
+  // Render
+  // ===============================
 
   return (
     <div className="space-y-6">
+      {/* Page Header */}
+
       <div>
         <h1 className="text-3xl font-bold">Complaints</h1>
 
         <p className="text-gray-500">View and manage hostel complaints.</p>
       </div>
 
+      {/* Toolbar */}
+
       <ComplaintToolbar
-        onComplaintCreated={loadComplaints}
+        onComplaintCreated={refetch}
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
         statusFilter={statusFilter}
         setStatusFilter={setStatusFilter}
       />
 
+      {/* Table */}
+
       <ComplaintTable
-        complaints={filteredComplaints}
-        loading={loading}
-        refreshColoadComplaintsmplaints={loadComplaints}
+        complaints={complaints}
+        loading={isLoading}
+        loadComplaints={refetch}
       />
     </div>
   );
 }
+
+// ===============================
+// 3. Export
+// ===============================
 
 export default ComplaintsPage;

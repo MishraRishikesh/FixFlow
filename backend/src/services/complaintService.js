@@ -43,98 +43,95 @@ const createComplaint = async (complaintData, user) => {
     hostel: user.hostel,
   });
 
-  return complaint;
+  return complaint.populate(complaintPopulate);
 };
 
 // ===============================
 // 3. Get Complaints
 // ===============================
 
-const getComplaints = async user => {
-  let complaints;
+const getComplaints = async (user, query = {}) => {
+  const {
+    page = 1,
+    limit = 10,
+    search = "",
+    sort = "-createdAt",
+    status,
+    category,
+    priority,
+  } = query;
 
-  // Student → Only own complaints
-  if (user.role === ROLES.STUDENT) {
-    complaints = await Complaint.find({
-      createdBy: user._id,
-    })
-      .populate("createdBy", "name email")
-      .populate("hostel", "name code")
-      .populate("assignedWorker", "name")
-      .sort({ createdAt: -1 });
-  }
+  const pageNumber = Number.isNaN(Number(page)) ? 1 : Math.max(Number(page), 1);
 
-  // Warden → All complaints from hostel
-  else if (user.role === ROLES.WARDEN) {
-    complaints = await Complaint.find({
-      hostel: user.hostel,
-    })
-      .populate("createdBy", "name email")
-      .populate("hostel", "name code")
-      .populate("assignedWorker", "name")
-      .sort({ createdAt: -1 });
-  }
+  const limitNumber = Number.isNaN(Number(limit))
+    ? 10
+    : Math.max(Number(limit), 1);
 
-  // Worker → Only assigned complaints
-  else if (user.role === ROLES.WORKER) {
-    complaints = await Complaint.find({
-      assignedWorker: user._id,
-    })
-      .populate("createdBy", "name email")
-      .populate("hostel", "name code")
-      .populate("assignedWorker", "name")
-      .sort({ createdAt: -1 });
-  }
+  const filter = {
+    ...buildComplaintFilter(user, {
+      status,
+      category,
+      priority,
+    }),
+    ...buildSearchFilter(search),
+  };
 
-  // Super Admin → No access
-  else {
-    throw new AppError("You are not allowed to view complaints.", 403);
-  }
+  const allowedSorts = [
+    "createdAt",
+    "-createdAt",
+    "priority",
+    "-priority",
+    "status",
+    "-status",
+  ];
+  const sortBy = allowedSorts.includes(sort) ? sort : "-createdAt";
 
-  return complaints;
+  const [complaints, total] = await Promise.all([
+    Complaint.find(filter)
+      .populate(complaintPopulate)
+      .sort(sortBy)
+      .skip((pageNumber - 1) * limitNumber)
+      .limit(limitNumber),
+
+    Complaint.countDocuments(filter),
+  ]);
+
+  return {
+    complaints,
+
+    pagination: {
+      total,
+
+      page: pageNumber,
+
+      limit: limitNumber,
+
+      totalPages: Math.ceil(total / limitNumber),
+
+      hasNextPage: pageNumber < Math.ceil(total / limitNumber),
+
+      hasPrevPage: pageNumber > 1,
+    },
+  };
 };
+
 // ===============================
 // 4. Get Complaint By ID
 // ===============================
 
 const getComplaintById = async (complaintId, user) => {
-  const complaint = await Complaint.findById(complaintId)
-    .populate("createdBy", "name email")
-    .populate("hostel", "name code")
-    .populate("assignedWorker", "name email")
-    .populate("assignedBy", "name email");
+  const complaint =
+    await Complaint.findById(complaintId).populate(complaintPopulate);
 
   if (!complaint) {
     throw new AppError("Complaint not found.", 404);
   }
 
-  // Student → Only own complaint
-  if (
-    user.role === ROLES.STUDENT &&
-    complaint.createdBy._id.toString() !== user._id.toString()
-  ) {
-    throw new AppError("You are not allowed to view this complaint.", 403);
-  }
-
-  // Warden → Complaint must belong to same hostel
-  if (
-    user.role === ROLES.WARDEN &&
-    complaint.hostel._id.toString() !== user.hostel.toString()
-  ) {
-    throw new AppError("You are not allowed to view this complaint.", 403);
-  }
-
-  // Worker → Only assigned complaint
-  if (
-    user.role === ROLES.WORKER &&
-    (!complaint.assignedWorker ||
-      complaint.assignedWorker._id.toString() !== user._id.toString())
-  ) {
-    throw new AppError("You are not allowed to view this complaint.", 403);
-  }
+  validateComplaintAccess(complaint, user);
 
   return complaint;
 };
+
 // ===============================
 // 5. Assign Worker
 // ===============================
@@ -176,7 +173,13 @@ const assignWorker = async (complaintId, workerId, user) => {
   if (!worker.isActive) {
     throw new AppError("Worker is inactive.", 400);
   }
-
+  // Prevent Assigning same worker
+  if (
+    complaint.assignedWorker &&
+    complaint.assignedWorker.toString() === worker._id.toString()
+  ) {
+    throw new AppError("Complaint is already assigned to this worker.", 400);
+  }
   // Completed complaints cannot be reassigned
   if (complaint.status === COMPLAINT_STATUS.COMPLETED) {
     throw new AppError("Completed complaints cannot be reassigned.", 400);
@@ -190,12 +193,7 @@ const assignWorker = async (complaintId, workerId, user) => {
 
   await complaint.save();
 
-  return complaint.populate([
-    { path: "createdBy", select: "name email" },
-    { path: "assignedWorker", select: "name email" },
-    { path: "assignedBy", select: "name email" },
-    { path: "hostel", select: "name code" },
-  ]);
+  return complaint.populate(complaintPopulate);
 };
 
 // ===============================
@@ -246,28 +244,15 @@ const updateComplaintStatus = async (complaintId, status, user) => {
     throw new AppError("Complaint is already completed.", 400);
   }
 
+  if (complaint.status === status) {
+    throw new AppError("Complaint is already in this status.", 400);
+  }
+
   complaint.status = status;
 
   await complaint.save();
 
-  return complaint.populate([
-    {
-      path: "createdBy",
-      select: "name email",
-    },
-    {
-      path: "assignedWorker",
-      select: "name email",
-    },
-    {
-      path: "assignedBy",
-      select: "name email",
-    },
-    {
-      path: "hostel",
-      select: "name code",
-    },
-  ]);
+  return complaint.populate(complaintPopulate);
 };
 
 // ===============================
@@ -311,31 +296,25 @@ const updateComplaint = async (complaintId, complaintData, user) => {
   }
 
   // Update editable fields
-  complaint.title = title;
-  complaint.description = description;
-  complaint.category = category;
-  complaint.priority = priority;
+  if (title !== undefined) {
+    complaint.title = title;
+  }
+
+  if (description !== undefined) {
+    complaint.description = description;
+  }
+
+  if (category !== undefined) {
+    complaint.category = category;
+  }
+
+  if (priority !== undefined) {
+    complaint.priority = priority;
+  }
 
   await complaint.save();
 
-  return complaint.populate([
-    {
-      path: "createdBy",
-      select: "name email",
-    },
-    {
-      path: "assignedWorker",
-      select: "name email",
-    },
-    {
-      path: "assignedBy",
-      select: "name email",
-    },
-    {
-      path: "hostel",
-      select: "name code",
-    },
-  ]);
+  return complaint.populate(complaintPopulate);
 };
 
 // ===============================
@@ -343,34 +322,150 @@ const updateComplaint = async (complaintId, complaintData, user) => {
 // ===============================
 
 const deleteComplaint = async (complaintId, user) => {
-  // Find Complaint
   const complaint = await Complaint.findById(complaintId);
 
   if (!complaint) {
     throw new AppError("Complaint not found.", 404);
   }
 
-  // Student → Only own pending complaints
   if (user.role === ROLES.STUDENT) {
-    if (complaint.createdBy.toString() !== user._id.toString()) {
-      throw new AppError("You are not allowed to delete this complaint.", 403);
-    }
+    validateComplaintAccess(complaint, user);
 
     if (complaint.status !== COMPLAINT_STATUS.PENDING) {
       throw new AppError("Only pending complaints can be deleted.", 400);
     }
   }
 
-  // Warden → Complaint must belong to same hostel
   if (user.role === ROLES.WARDEN) {
-    if (complaint.hostel.toString() !== user.hostel.toString()) {
-      throw new AppError("You are not allowed to delete this complaint.", 403);
-    }
+    validateComplaintAccess(complaint, user);
   }
 
   await complaint.deleteOne();
+};
 
-  return;
+// ===============================
+// Complaint Populate Options
+// ===============================
+
+const complaintPopulate = [
+  {
+    path: "createdBy",
+    select: "name email",
+  },
+  {
+    path: "assignedWorker",
+    select: "name email",
+  },
+  {
+    path: "assignedBy",
+    select: "name email",
+  },
+  {
+    path: "hostel",
+    select: "name code",
+  },
+];
+
+// ===============================
+// Build Complaint Filter
+// ===============================
+
+const buildComplaintFilter = (user, query = {}) => {
+  const filter = {};
+
+  // Role Based Filter
+  if (user.role === ROLES.STUDENT) {
+    filter.createdBy = user._id;
+  } else if (user.role === ROLES.WARDEN) {
+    filter.hostel = user.hostel;
+  } else if (user.role === ROLES.WORKER) {
+    filter.assignedWorker = user._id;
+  } else {
+    throw new AppError("You are not allowed to view complaints.", 403);
+  }
+
+  // Status Filter
+  if (query.status) {
+    filter.status = query.status;
+  }
+
+  // Category Filter
+  if (query.category) {
+    filter.category = query.category;
+  }
+
+  // Priority Filter
+  if (query.priority) {
+    filter.priority = query.priority;
+  }
+
+  return filter;
+};
+
+// ===============================
+// Build Search Filter
+// ===============================
+
+const buildSearchFilter = search => {
+  if (!search) return {};
+
+  return {
+    $or: [
+      {
+        title: {
+          $regex: search,
+          $options: "i",
+        },
+      },
+      {
+        description: {
+          $regex: search,
+          $options: "i",
+        },
+      },
+    ],
+  };
+};
+
+// ===============================
+// Validate Complaint Access
+// ===============================
+
+const validateComplaintAccess = (complaint, user) => {
+  switch (user.role) {
+    case ROLES.STUDENT:
+      if (complaint.createdBy.toString() !== user._id.toString()) {
+        throw new AppError(
+          "You are not allowed to access this complaint.",
+          403,
+        );
+      }
+      break;
+
+    case ROLES.WARDEN:
+      if (complaint.hostel.toString() !== user.hostel.toString()) {
+        throw new AppError(
+          "You are not allowed to access this complaint.",
+          403,
+        );
+      }
+      break;
+
+    case ROLES.WORKER:
+      if (
+        !complaint.assignedWorker ||
+        complaint.assignedWorker.toString() !== user._id.toString()
+      ) {
+        throw new AppError(
+          "You are not allowed to access this complaint.",
+          403,
+        );
+      }
+      break;
+
+    default:
+      throw new AppError("Unauthorized.", 403);
+  }
 };
 
 // ===============================

@@ -1,31 +1,40 @@
+import { AlertCircle, CheckCircle2, Clock3, Users } from "lucide-react";
+
 import StatsCard from "./StatsCard";
 
-function StatsGrid({ stats }) {
+function StatsGrid({ stats = {} }) {
+  const cards = [
+    {
+      title: "Pending Complaints",
+      value: stats.pendingComplaints ?? 0,
+      icon: Clock3,
+      color: "orange",
+    },
+    {
+      title: "Active Complaints",
+      value: stats.activeComplaints ?? 0,
+      icon: AlertCircle,
+      color: "blue",
+    },
+    {
+      title: "Resolved Complaints",
+      value: stats.resolvedComplaints ?? 0,
+      icon: CheckCircle2,
+      color: "green",
+    },
+    {
+      title: "Workers",
+      value: stats.workers ?? 0,
+      icon: Users,
+      color: "purple",
+    },
+  ];
+
   return (
-    <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-      <StatsCard
-        title="Pending Complaints"
-        value={stats.pendingComplaints}
-        color="text-orange-500"
-      />
-
-      <StatsCard
-        title="Active Complaints"
-        value={stats.activeComplaints}
-        color="text-blue-600"
-      />
-
-      <StatsCard
-        title="Resolved Complaints"
-        value={stats.resolvedComplaints}
-        color="text-green-600"
-      />
-
-      <StatsCard
-        title="Workers"
-        value={stats.workers}
-        color="text-purple-600"
-      />
+    <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
+      {cards.map(card => (
+        <StatsCard key={card.title} {...card} />
+      ))}
     </div>
   );
 }

@@ -8,10 +8,12 @@ import api from "./api";
 // 2. Get Complaints
 // ===============================
 
-export async function getComplaints() {
-  const response = await api.get("/complaints");
+export async function getComplaints(params = {}) {
+  const response = await api.get("/complaints", {
+    params,
+  });
 
-  return response.data.data;
+  return response.data;
 }
 
 // ===============================

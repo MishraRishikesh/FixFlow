@@ -46,12 +46,14 @@ const updateComplaintController = asyncHandler(async (req, res) => {
 // ===============================
 
 const getComplaintsController = asyncHandler(async (req, res) => {
-  const complaints = await getComplaints(req.user);
+  const { complaints, pagination } = await getComplaints(req.user, req.query);
 
   res.status(200).json({
     success: true,
-    count: complaints.length,
+
     data: complaints,
+
+    pagination,
   });
 });
 
