@@ -6,18 +6,22 @@ import PublicLayout from "../layouts/PublicLayout";
 import LandingPage from "../pages/landing/LandingPage";
 import LoginPage from "../pages/login/LoginPage";
 import DashboardPage from "../pages/dashboard/DashboardPage";
-import ProtectedRoute from "./ProtectedRoute";
-import PublicRoute from "./PublicRoute";
 import ComplaintsPage from "../pages/complaints/ComplaintsPage";
 import StaffPage from "../pages/staff/StaffPage";
+import HostelPage from "../pages/hostel/HostelPage";
+
+import ProtectedRoute from "./ProtectedRoute";
+import PublicRoute from "./PublicRoute";
 
 function AppRoutes() {
   return (
     <BrowserRouter>
       <Routes>
         {/* Public */}
+
         <Route element={<PublicLayout />}>
           <Route path="/" element={<LandingPage />} />
+
           <Route
             path="/login"
             element={
@@ -29,6 +33,7 @@ function AppRoutes() {
         </Route>
 
         {/* Protected */}
+
         <Route
           element={
             <ProtectedRoute>
@@ -41,6 +46,8 @@ function AppRoutes() {
           <Route path="/complaints" element={<ComplaintsPage />} />
 
           <Route path="/staff" element={<StaffPage />} />
+
+          <Route path="/hostel" element={<HostelPage />} />
         </Route>
       </Routes>
     </BrowserRouter>
