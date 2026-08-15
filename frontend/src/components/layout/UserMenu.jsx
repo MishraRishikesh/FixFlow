@@ -1,35 +1,51 @@
-// ===============================
-// 1. Imports
-// ===============================
-
 import { useNavigate } from "react-router-dom";
-import { LogOut } from "lucide-react";
+import { GraduationCap, HardHat, LogOut, ShieldCheck } from "lucide-react";
 
 import useAuth from "../../hooks/useAuth";
-
-// ===============================
-// 2. Component
-// ===============================
 
 function UserMenu() {
   const navigate = useNavigate();
 
   const { user, logout } = useAuth();
 
+  const roleConfig = {
+    student: {
+      icon: GraduationCap,
+      className: "bg-blue-100 text-blue-600",
+    },
+
+    worker: {
+      icon: HardHat,
+      className: "bg-orange-100 text-orange-600",
+    },
+
+    warden: {
+      icon: ShieldCheck,
+      className: "bg-purple-100 text-purple-600",
+    },
+
+    admin: {
+      icon: ShieldCheck,
+      className: "bg-purple-100 text-purple-600",
+    },
+  };
+
+  const config = roleConfig[user?.role] || roleConfig.student;
+
+  const RoleIcon = config.icon;
+
   const handleLogout = () => {
     logout();
-
     navigate("/login");
   };
 
   return (
     <div className="flex items-center gap-4">
-      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-600 font-semibold text-white">
-        {user?.name
-          ?.split(" ")
-          .map(word => word[0])
-          .join("")
-          .slice(0, 2)}
+      <div
+        className={`flex h-10 w-10 items-center justify-center rounded-full ${config.className}`}
+        title={user?.role || "User"}
+      >
+        <RoleIcon size={21} strokeWidth={2} />
       </div>
 
       <button

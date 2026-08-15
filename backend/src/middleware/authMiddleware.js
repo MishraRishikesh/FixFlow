@@ -38,6 +38,7 @@ const verifyToken = async (req, res, next) => {
     }
 
     // Attach User to Request
+
     req.user = user;
 
     next();

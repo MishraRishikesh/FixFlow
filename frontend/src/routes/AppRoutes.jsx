@@ -13,6 +13,7 @@ import HostelPage from "../pages/hostel/HostelPage";
 import ProtectedRoute from "./ProtectedRoute";
 import PublicRoute from "./PublicRoute";
 import StudentPage from "../pages/student/StudentPage";
+import AttendancePage from "../pages/attendance/AttendancePage";
 
 function AppRoutes() {
   return (
@@ -43,14 +44,11 @@ function AppRoutes() {
           }
         >
           <Route path="/dashboard" element={<DashboardPage />} />
-
           <Route path="/complaints" element={<ComplaintsPage />} />
-
           <Route path="/staff" element={<StaffPage />} />
-
           <Route path="/hostel" element={<HostelPage />} />
-
           <Route path="/students" element={<StudentPage />} />
+          <Route path="/attendance" element={<AttendancePage />} />
         </Route>
       </Routes>
     </BrowserRouter>

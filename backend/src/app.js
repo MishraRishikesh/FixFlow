@@ -8,6 +8,7 @@ import studentRoutes from "./routes/studentRoutes.js";
 import errorMiddleware from "./middleware/errorMiddleware.js";
 import healthRoutes from "./routes/healthRoutes.js";
 import dashboardRoutes from "./routes/dashboardRoutes.js";
+import attendanceRoutes from "./routes/attendanceRoutes.js";
 
 const app = express();
 
@@ -21,6 +22,7 @@ app.use("/api/complaints", complaintRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/staff", staffRoutes);
 app.use("/api/students", studentRoutes);
+app.use("/api/attendance", attendanceRoutes);
 
 app.get("/", (req, res) => {
   res.json({

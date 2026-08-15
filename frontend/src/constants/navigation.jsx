@@ -5,6 +5,7 @@ import {
   Building2,
   Settings,
   GraduationCap,
+  CalendarCheck,
 } from "lucide-react";
 
 export const navigation = [
@@ -32,6 +33,11 @@ export const navigation = [
     label: "Students",
     path: "/students",
     icon: GraduationCap,
+  },
+  {
+    label: "Attendance",
+    path: "/attendance",
+    icon: CalendarCheck,
   },
   {
     label: "Settings",
