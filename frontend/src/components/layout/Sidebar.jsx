@@ -1,18 +1,20 @@
 import NavItem from "./NavItem";
-
 import { navigation } from "../../constants/navigation";
 import useAuth from "../../hooks/useAuth";
 
 function Sidebar() {
   const { user } = useAuth();
-
   const role = user?.role;
 
   const visibleNavigation = navigation.filter(item => {
     if (role === "student") {
-      return ["/dashboard", "/complaints", "/attendance", "/settings"].includes(
-        item.path,
-      );
+      return [
+        "/dashboard",
+        "/complaints",
+        "/attendance",
+        "/fees",
+        "/settings",
+      ].includes(item.path);
     }
 
     if (role === "worker") {

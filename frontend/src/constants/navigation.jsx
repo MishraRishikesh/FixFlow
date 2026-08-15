@@ -6,6 +6,7 @@ import {
   Settings,
   GraduationCap,
   CalendarCheck,
+  Receipt,
 } from "lucide-react";
 
 export const navigation = [
@@ -38,6 +39,11 @@ export const navigation = [
     label: "Attendance",
     path: "/attendance",
     icon: CalendarCheck,
+  },
+  {
+    label: "Fees",
+    path: "/fees",
+    icon: Receipt,
   },
   {
     label: "Settings",
