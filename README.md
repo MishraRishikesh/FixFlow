@@ -38,14 +38,14 @@ Completed
 
 The same system also handles:
 
-👨‍🎓 Student management
-🛠️ Worker management
-🏢 Hostel management
-📋 Complaint management
-📅 Attendance
-💰 Fee management
-📊 Dashboard analytics
-🔐 Role-based access control
+- 👨‍🎓 Student management
+- 🛠️ Worker management
+- 🏢 Hostel management
+- 📋 Complaint management
+- 📅 Attendance
+- 💰 Fee management
+- 📊 Dashboard analytics
+- 🔐 Role-based access control
 
 ---
 
@@ -55,15 +55,15 @@ The same system also handles:
 
 A complete complaint workflow rather than a simple complaint form.
 
--Students can raise complaints
--Categories and priorities
--Complaint status lifecycle
--Warden assignment of workers
--Worker-specific assigned complaints
--Worker status updates
--Search and filtering
--Pagination
--Complaint history and dashboard statistics
+- Students can raise complaints
+- Categories and priorities
+- Complaint status lifecycle
+- Warden assignment of workers
+- Worker-specific assigned complaints
+- Worker status updates
+- Search and filtering
+- Pagination
+- Complaint history and dashboard statistics
 
 ---
 
