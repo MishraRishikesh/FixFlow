@@ -12,6 +12,7 @@ import HostelPage from "../pages/hostel/HostelPage";
 import StudentPage from "../pages/student/StudentPage";
 import AttendancePage from "../pages/attendance/AttendancePage";
 import FeesPage from "../pages/fees/FeesPage";
+import SettingsPage from "../pages/settings/SettingsPage";
 
 import ProtectedRoute from "./ProtectedRoute";
 import PublicRoute from "./PublicRoute";
@@ -56,9 +57,11 @@ function AppRoutes() {
           }
         >
           {/* All authenticated roles */}
+
           <Route path="/dashboard" element={<DashboardPage />} />
 
           {/* Warden + Worker + Student */}
+
           <Route
             path="/complaints"
             element={
@@ -69,6 +72,7 @@ function AppRoutes() {
           />
 
           {/* Warden only */}
+
           <Route
             path="/staff"
             element={
@@ -79,6 +83,7 @@ function AppRoutes() {
           />
 
           {/* Admin + Warden */}
+
           <Route
             path="/hostel"
             element={
@@ -89,6 +94,7 @@ function AppRoutes() {
           />
 
           {/* Warden only */}
+
           <Route
             path="/students"
             element={
@@ -99,6 +105,7 @@ function AppRoutes() {
           />
 
           {/* Warden + Student */}
+
           <Route
             path="/attendance"
             element={
@@ -109,6 +116,7 @@ function AppRoutes() {
           />
 
           {/* Warden + Student */}
+
           <Route
             path="/fees"
             element={
@@ -117,6 +125,10 @@ function AppRoutes() {
               </RoleRoute>
             }
           />
+
+          {/* All authenticated roles */}
+
+          <Route path="/settings" element={<SettingsPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

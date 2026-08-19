@@ -1,8 +1,11 @@
 import { AlertCircle, CheckCircle2, Clock3, Users } from "lucide-react";
 
 import StatsCard from "./StatsCard";
+import useAuth from "../../hooks/useAuth";
 
 function StatsGrid({ stats = {} }) {
+  const { user } = useAuth();
+
   const cards = [
     {
       title: "Pending Complaints",
@@ -22,16 +25,23 @@ function StatsGrid({ stats = {} }) {
       icon: CheckCircle2,
       color: "green",
     },
-    {
+  ];
+
+  if (user?.role !== "student") {
+    cards.push({
       title: "Workers",
       value: stats.workers ?? 0,
       icon: Users,
       color: "purple",
-    },
-  ];
+    });
+  }
 
   return (
-    <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
+    <div
+      className={`grid gap-6 sm:grid-cols-2 ${
+        cards.length === 4 ? "xl:grid-cols-4" : "xl:grid-cols-3"
+      }`}
+    >
       {cards.map(card => (
         <StatsCard key={card.title} {...card} />
       ))}

@@ -57,6 +57,10 @@ function QuickActions() {
 
   const roleActions = actions[user?.role] ?? [];
 
+  if (roleActions.length === 0) {
+    return null;
+  }
+
   return (
     <Card>
       <h2 className="mb-5 text-lg font-semibold">Quick Actions</h2>
@@ -66,7 +70,7 @@ function QuickActions() {
           const Icon = action.icon;
 
           return (
-            <Link key={action.label} to={action.to}>
+            <Link key={action.label} to={action.to} className="block">
               <Button className="w-full justify-start gap-2">
                 <Icon size={18} />
                 {action.label}
