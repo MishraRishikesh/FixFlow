@@ -49,31 +49,34 @@ The same system also handles:
 
 ---
 
-✨ Key Features:-
+## ✨ Key Features
 
 📋 Complaint Management
 
 A complete complaint workflow rather than a simple complaint form.
 
-Students can raise complaints
-Categories and priorities
-Complaint status lifecycle
-Warden assignment of workers
-Worker-specific assigned complaints
-Worker status updates
-Search and filtering
-Pagination
-Complaint history and dashboard statistics
+-Students can raise complaints
+-Categories and priorities
+-Complaint status lifecycle
+-Warden assignment of workers
+-Worker-specific assigned complaints
+-Worker status updates
+-Search and filtering
+-Pagination
+-Complaint history and dashboard statistics
+
+---
+
 👥 Role-Based Access Control
 
 FixFlow supports four roles:
 
-    Role	      Responsibility
-
-👑 Admin Hostel-level administration
-🛡️ Warden Manage hostel operations
-🧑‍🔧 Worker Handle assigned complaints
-🎓 Student Raise complaints and view personal data
+| Role       | Responsibility                          |
+| ---------- | --------------------------------------- |
+| 👑 Admin   | Hostel-level administration             |
+| 🛡️ Warden  | Manage hostel operations                |
+| 🧑‍🔧 Worker  | Handle assigned complaints              |
+| 🎓 Student | Raise complaints and view personal data |
 
 Authorization is enforced on the backend, not only hidden in the frontend.
 
@@ -305,7 +308,7 @@ Warden reviews complaint
 ↓
 Warden assigns worker
 ↓
-Worker accepts / starts work
+Worker starts work
 ↓
 Worker updates status
 ↓
@@ -341,7 +344,7 @@ Attendance percentage calculated
 
 ---
 
-🎯 Design Goals :-
+## 🎯 Design Goals
 
 FixFlow was designed with a few principles:
 
@@ -354,7 +357,7 @@ Maintain a clean and simple user interface
 
 ---
 
-🔮 Future Scope :-
+## 🔮 Future Scope
 
 Possible future extensions include:-
 
@@ -373,7 +376,7 @@ These are intentionally kept outside the current V1 scope.
 
 ---
 
-📌 Project Status :-
+## 📌 Project Status
 
 V1 Complete
 
