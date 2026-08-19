@@ -196,39 +196,41 @@ The backend controls what users are actually allowed to do.
 
 ---
 
-🏗️ Architecture
+## 🏗️ Architecture
 
+```text
 ┌─────────────────────────────┐
-│ React Frontend │
-│ │
-│ Pages • Components • UI │
-│ React Query • Axios │
+│        React Frontend       │
+│                             │
+│  Pages • Components • UI    │
+│  React Query • Axios        │
 └──────────────┬──────────────┘
-│
-│ REST API
-▼
+               │
+               │ REST API
+               ▼
 ┌─────────────────────────────┐
-│ Node.js + Express │
-│ │
-│ Routes → Controllers │
-│ → Services │
-│ → Models │
-│ │
-│ JWT Authentication │
-│ Role-based Authorization │
+│      Node.js + Express      │
+│                             │
+│  Routes → Controllers       │
+│         → Services          │
+│         → Models            │
+│                             │
+│  JWT Authentication         │
+│  Role-based Authorization   │
 └──────────────┬──────────────┘
-│
-▼
+               │
+               ▼
 ┌─────────────────────────────┐
-│ MongoDB │
-│ │
-│ Staff │
-│ Hostels │
-│ Complaints │
-│ Attendance │
-│ Fees │
-│ Payments │
+│           MongoDB           │
+│                             │
+│  Staff                      │
+│  Hostels                    │
+│  Complaints                 │
+│  Attendance                 │
+│  Fees                       │
+│  Payments                   │
 └─────────────────────────────┘
+```
 
 ---
 
@@ -262,39 +264,40 @@ The backend controls what users are actually allowed to do.
 
 ---
 
-📁 Project Structure :-
+## 📁 Project Structure
 
+```text
 FixFlow/
-│
 ├── backend/
-│ └── src/
-│ ├── constants/
-│ ├── controllers/
-│ ├── middleware/
-│ ├── models/
-│ ├── routes/
-│ ├── services/
-│ ├── utils/
-│ └── app.js
+│   └── src/
+│       ├── constants/
+│       ├── controllers/
+│       ├── middleware/
+│       ├── models/
+│       ├── routes/
+│       ├── services/
+│       ├── utils/
+│       └── app.js
 │
 ├── frontend/
-│ └── src/
-│ ├── components/
-│ ├── constants/
-│ ├── context/
-│ ├── hooks/
-│ ├── layouts/
-│ ├── pages/
-│ ├── routes/
-│ ├── services/
-│ ├── App.jsx
-│ └── main.jsx
+│   └── src/
+│       ├── components/
+│       ├── constants/
+│       ├── context/
+│       ├── hooks/
+│       ├── layouts/
+│       ├── pages/
+│       ├── routes/
+│       ├── services/
+│       ├── App.jsx
+│       └── main.jsx
 │
 ├── CHANGELOG.md
 ├── LICENSE
 ├── PRODUCT_DECISIONS.md
 ├── README.md
 └── V2_IDEAS.md
+```
 
 ---
 
