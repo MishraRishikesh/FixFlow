@@ -86,11 +86,11 @@ Authorization is enforced on the backend, not only hidden in the frontend.
 
 Wardens can manage students belonging to their hostel.
 
-Add students
-Update student information
-Search students
-Activate/deactivate accounts
-View student records
+- Add students
+- Update student information
+- Search students
+- Activate/deactivate accounts
+- View student records
 
 Students use the same authenticated system while only accessing
 the information relevant to their role.
@@ -101,11 +101,11 @@ the information relevant to their role.
 
 Wardens can manage maintenance workers.
 
-Create workers
-Update worker information
-Activate/deactivate workers
-Assign workers to complaints
-Track active workers
+- Create workers
+- Update worker information
+- Activate/deactivate workers
+- Assign workers to complaints
+- Track active workers
 
 ---
 
@@ -115,18 +115,18 @@ Wardens can maintain student attendance.
 
 Supported states:
 
---> Present
---> Absent
---> On Leave
+- Present
+- Absent
+- On Leave
 
 Includes:
 
--> Daily attendance
--> Attendance history
--> Student-specific attendance
--> Date-based filtering
--> Attendance percentage
--> Student self-view
+- Daily attendance
+- Attendance history
+- Student-specific attendance
+- Date-based filtering
+- Attendance percentage
+- Student self-view
 
 On Leave records are excluded from attendance percentage calculations.
 
@@ -138,21 +138,21 @@ FixFlow includes a complete hostel fee workflow.
 
 Wardens can:
 
-Set fees for all active students
-Set or update individual student fees
-Record payments
-Track partial payments
-View payment history
-Filter by payment status
+- Set fees for all active students
+- Set or update individual student fees
+- Record payments
+- Track partial payments
+- View payment history
+- Filter by payment status
 
 Students can view:
 
-Total fee
-Amount paid
-Remaining amount
-Due date
-Payment status
-Payment history
+- Total fee
+- Amount paid
+- Remaining amount
+- Due date
+- Payment status
+- Payment history
 
 The system also prevents invalid operations such as recording a payment
 greater than the remaining balance.
@@ -165,14 +165,14 @@ The dashboard provides an operational overview of the hostel.
 
 It includes:
 
-Pending complaints
-Active complaints
-Resolved complaints
-Worker statistics
-Complaint analytics
-Recent activity
-Recent complaints
-Role-specific quick actions
+- Pending complaints
+- Active complaints
+- Resolved complaints
+- Worker statistics
+- Complaint analytics
+- Recent activity
+- Recent complaints
+- Role-specific quick actions
 
 ---
 
@@ -236,29 +236,29 @@ The backend controls what users are actually allowed to do.
 
 1. Frontend :-
 
--> React
--> Vite
--> Tailwind CSS
--> React Router
--> TanStack Query
--> Axios
--> Lucide React
+- React
+- Vite
+- Tailwind CSS
+- React Router
+- TanStack Query
+- Axios
+- Lucide React
 
 2. Backend :-
 
--> Node.js
--> Express.js
--> MongoDB
--> Mongoose
--> JWT
--> bcrypt
+- Node.js
+- Express.js
+- MongoDB
+- Mongoose
+- JWT
+- bcrypt
 
 3. Development :-
 
--> Git
--> GitHub
--> ESLint
--> VS Code
+- Git
+- GitHub
+- ESLint
+- VS Code
 
 ---
 
@@ -300,15 +300,13 @@ FixFlow/
 
 🔄 Example Workflow
 
-Maintenance Complaint :-
-
 Student raises complaint
 ↓
 Warden reviews complaint
 ↓
 Warden assigns worker
 ↓
-Worker starts work
+Worker accepts / starts work
 ↓
 Worker updates status
 ↓
@@ -348,12 +346,12 @@ Attendance percentage calculated
 
 FixFlow was designed with a few principles:
 
-Build around real workflows rather than isolated CRUD screens
-Keep role permissions explicit
-Keep business logic in the backend
-Make the architecture modular
-Keep the system extensible for future hostel operations
-Maintain a clean and simple user interface
+- Build around real workflows rather than isolated CRUD screens
+- Keep role permissions explicit
+- Keep business logic in the backend
+- Make the architecture modular
+- Keep the system extensible for future hostel operations
+- Maintain a clean and simple user interface
 
 ---
 
@@ -361,16 +359,16 @@ Maintain a clean and simple user interface
 
 Possible future extensions include:-
 
-Room allocation
-Hostel notices
-Notifications
-Online fee payments
-Maintenance inventory
-Advanced analytics
-Dark mode
-Mobile application
-Multi-hostel administration
-Automated notifications
+- Room allocation
+- Hostel notices
+- Notifications
+- Online fee payments
+- Maintenance inventory
+- Advanced analytics
+- Dark mode
+- Mobile application
+- Multi-hostel administration
+- Automated notifications
 
 These are intentionally kept outside the current V1 scope.
 
