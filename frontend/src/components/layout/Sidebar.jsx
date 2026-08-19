@@ -7,6 +7,10 @@ function Sidebar() {
   const role = user?.role;
 
   const visibleNavigation = navigation.filter(item => {
+    if (role === "admin") {
+      return ["/dashboard", "/hostel"].includes(item.path);
+    }
+
     if (role === "student") {
       return [
         "/dashboard",
@@ -21,7 +25,20 @@ function Sidebar() {
       return ["/dashboard", "/complaints", "/settings"].includes(item.path);
     }
 
-    return true;
+    if (role === "warden") {
+      return [
+        "/dashboard",
+        "/complaints",
+        "/staff",
+        "/hostel",
+        "/students",
+        "/attendance",
+        "/fees",
+        "/settings",
+      ].includes(item.path);
+    }
+
+    return [];
   });
 
   return (

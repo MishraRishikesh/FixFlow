@@ -1,11 +1,15 @@
 import { useNavigate } from "react-router-dom";
-import { GraduationCap, HardHat, LogOut, ShieldCheck } from "lucide-react";
-
+import {
+  Crown,
+  GraduationCap,
+  HardHat,
+  LogOut,
+  ShieldCheck,
+} from "lucide-react";
 import useAuth from "../../hooks/useAuth";
 
 function UserMenu() {
   const navigate = useNavigate();
-
   const { user, logout } = useAuth();
 
   const roleConfig = {
@@ -13,20 +17,17 @@ function UserMenu() {
       icon: GraduationCap,
       className: "bg-blue-100 text-blue-600",
     },
-
     worker: {
       icon: HardHat,
       className: "bg-orange-100 text-orange-600",
     },
-
     warden: {
       icon: ShieldCheck,
       className: "bg-purple-100 text-purple-600",
     },
-
     admin: {
-      icon: ShieldCheck,
-      className: "bg-purple-100 text-purple-600",
+      icon: Crown,
+      className: "bg-amber-100 text-amber-600",
     },
   };
 
