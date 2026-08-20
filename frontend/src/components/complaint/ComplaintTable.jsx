@@ -32,6 +32,7 @@ function ComplaintTable({ complaints, loading, loadComplaints }) {
   const [statusOpen, setStatusOpen] = useState(false);
 
   const isWorker = user?.role === "worker";
+  const isWarden = user?.role === "warden";
 
   const nextStatus =
     selectedComplaint?.status === "assigned"
@@ -113,6 +114,7 @@ function ComplaintTable({ complaints, loading, loadComplaints }) {
                     key={complaint._id}
                     complaint={complaint}
                     isWorker={isWorker}
+                    isWarden={isWarden}
                     onView={() => {
                       setSelectedComplaint(complaint);
                       setViewOpen(true);

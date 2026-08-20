@@ -6,6 +6,7 @@ import PriorityBadge from "../common/PriorityBadge";
 function ComplaintTableRow({
   complaint,
   isWorker,
+  isWarden,
   onView,
   onAssign,
   onEdit,
@@ -34,6 +35,7 @@ function ComplaintTableRow({
 
       <td className="px-6 py-4">
         <div className="flex items-center gap-2">
+          {/* View */}
           <button
             type="button"
             onClick={onView}
@@ -43,6 +45,7 @@ function ComplaintTableRow({
             <Eye size={18} />
           </button>
 
+          {/* Worker: Start Complaint */}
           {isWorker && complaint.status === "assigned" && (
             <button
               type="button"
@@ -54,6 +57,7 @@ function ComplaintTableRow({
             </button>
           )}
 
+          {/* Worker: Mark Completed */}
           {isWorker && complaint.status === "in_progress" && (
             <button
               type="button"
@@ -65,7 +69,8 @@ function ComplaintTableRow({
             </button>
           )}
 
-          {!isWorker && (
+          {/* Warden: Assign Worker */}
+          {isWarden && (
             <button
               type="button"
               onClick={onAssign}
@@ -76,6 +81,7 @@ function ComplaintTableRow({
             </button>
           )}
 
+          {/* Non-worker: Edit */}
           {!isWorker && (
             <button
               type="button"
@@ -87,6 +93,7 @@ function ComplaintTableRow({
             </button>
           )}
 
+          {/* Non-worker: Delete */}
           {!isWorker && (
             <button
               type="button"

@@ -15,6 +15,9 @@ function QuickActions() {
         label: "Raise Complaint",
         icon: Plus,
         to: "/complaints",
+        state: {
+          openCreateComplaint: true,
+        },
       },
       {
         label: "My Complaints",
@@ -48,6 +51,14 @@ function QuickActions() {
         to: "/complaints",
       },
       {
+        label: "Create Complaint",
+        icon: Plus,
+        to: "/complaints",
+        state: {
+          openCreateComplaint: true,
+        },
+      },
+      {
         label: "Add Worker",
         icon: Plus,
         to: "/staff",
@@ -56,10 +67,6 @@ function QuickActions() {
   };
 
   const roleActions = actions[user?.role] ?? [];
-
-  if (roleActions.length === 0) {
-    return null;
-  }
 
   return (
     <Card>
@@ -70,7 +77,12 @@ function QuickActions() {
           const Icon = action.icon;
 
           return (
-            <Link key={action.label} to={action.to} className="block">
+            <Link
+              key={action.label}
+              to={action.to}
+              state={action.state}
+              className="block"
+            >
               <Button className="w-full justify-start gap-2">
                 <Icon size={18} />
                 {action.label}

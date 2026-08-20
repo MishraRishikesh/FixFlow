@@ -1,7 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import CreateComplaintModal from "./CreateComplaintModal";
 import ComplaintForm from "./ComplaintForm";
+
+import useAuth from "../../hooks/useAuth";
 
 function ComplaintToolbar({
   onComplaintCreated,
@@ -14,7 +17,27 @@ function ComplaintToolbar({
   priorityFilter,
   setPriorityFilter,
 }) {
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
+  const canCreateComplaint =
+    user?.role === "student" || user?.role === "warden";
+
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(
+    () => location.state?.openCreateComplaint === true,
+  );
+
+  useEffect(() => {
+    if (!location.state?.openCreateComplaint) {
+      return;
+    }
+
+    navigate(location.pathname, {
+      replace: true,
+      state: {},
+    });
+  }, [location, navigate]);
 
   function handleComplaintCreated() {
     setIsCreateModalOpen(false);
@@ -104,13 +127,15 @@ function ComplaintToolbar({
         </div>
 
         {/* New Complaint */}
-        <button
-          type="button"
-          onClick={() => setIsCreateModalOpen(true)}
-          className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
-        >
-          New Complaint
-        </button>
+        {canCreateComplaint && (
+          <button
+            type="button"
+            onClick={() => setIsCreateModalOpen(true)}
+            className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+          >
+            New Complaint
+          </button>
+        )}
       </div>
 
       <CreateComplaintModal
